@@ -1,0 +1,71 @@
+.TH THEME-SWITCH 1 "November 2024" "Version 1.0.2" "User Commands"
+.SH NAME
+theme-switch \- toggle between light and dark themes for Neovim and Kitty
+
+.SH SYNOPSIS
+.B theme-switch
+.RB [ -v ]
+.RB [ --version ]
+.RB [ -t ]
+.RB [ --toggle ]
+
+.SH DESCRIPTION
+.B theme-switch
+is a script designed to switch between light and dark themes for Neovim and Kitty by copying pre-defined configuration templates. The script updates the current theme state and allows for quick toggling.
+
+.SH OPTIONS
+.TP
+.BR -v ", " --version
+Displays the version number of the script.
+
+.TP
+.BR -t ", " --toggle
+Toggles the current theme from dark to light or vice versa, updating the relevant configuration files.
+
+.SH CONFIGURATION
+The script requires a configuration directory located at
+.BR $HOME/.config/theme-switch ,
+which contains the following files:
+.RS
+.IP - 2
+.I theme.conf
+: Keeps track of the current theme (either "dark" or "light").
+.IP - 2
+.I nvim.lua
+: Theme configuration file for Neovim.
+.IP - 2
+.I kitty.conf
+: Theme configuration file for Kitty.
+.IP - 2
+.I templates/
+: Directory containing template files for both dark and light themes for Neovim and Kitty.
+.RE
+
+.SH EXAMPLES
+.TP
+Toggle the current theme:
+.B
+theme-switch -t
+
+.TP
+Check the version:
+.B
+theme-switch -v
+
+.SH FILES
+.BR $HOME/.config/theme-switch/theme.conf
+.RS
+Configuration file that stores the current theme state (dark or light).
+.RE
+
+.BR $HOME/.config/theme-switch/templates/
+.RS
+Directory containing theme templates for each application.
+.RE
+
+.SH AUTHOR
+Written by caesar003.
+
+
+.SH COPYRIGHT
+This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
