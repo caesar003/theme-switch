@@ -1,6 +1,6 @@
-.TH THEME-SWITCH 1 "November 2024" "Version 1.0.2" "User Commands"
+.TH THEME-SWITCH 1 "November 2024" "Version 1.0.3" "User Commands"
 .SH NAME
-theme-switch \- toggle between light and dark themes for Neovim and Kitty
+theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim
 
 .SH SYNOPSIS
 .B theme-switch
@@ -11,7 +11,7 @@ theme-switch \- toggle between light and dark themes for Neovim and Kitty
 
 .SH DESCRIPTION
 .B theme-switch
-is a script designed to switch between light and dark themes for Neovim and Kitty by copying pre-defined configuration templates. The script updates the current theme state and allows for quick toggling.
+is a script designed to switch between light and dark themes for Neovim, Kitty, and Vim by copying pre-defined configuration templates. The script updates the current theme state and allows for quick toggling. Users can control which applications are affected by the theme switch through configuration options.
 
 .SH OPTIONS
 .TP
@@ -20,7 +20,8 @@ Displays the version number of the script.
 
 .TP
 .BR -t ", " --toggle
-Toggles the current theme from dark to light or vice versa, updating the relevant configuration files.
+Toggles the current theme from dark to light or vice versa, updating the relevant configuration files based on settings in
+.I theme.conf.
 
 .SH CONFIGURATION
 The script requires a configuration directory located at
@@ -29,17 +30,48 @@ which contains the following files:
 .RS
 .IP - 2
 .I theme.conf
-: Keeps track of the current theme (either "dark" or "light").
+: Stores the current theme ("dark" or "light") and configuration options for each application.
 .IP - 2
-.I nvim.lua
-: Theme configuration file for Neovim.
+.I nvim_theme
+: Path to the Neovim theme configuration file, customizable in
+.I theme.conf.
 .IP - 2
-.I kitty.conf
-: Theme configuration file for Kitty.
+.I vim_theme
+: Path to the Vim theme configuration file, customizable in
+.I theme.conf.
+.IP - 2
+.I kitty_theme
+: Path to the Kitty theme configuration file, customizable in
+.I theme.conf.
 .IP - 2
 .I templates/
-: Directory containing template files for both dark and light themes for Neovim and Kitty.
+: Directory containing template files for both dark and light themes for Neovim, Kitty, and Vim.
 .RE
+
+.SH CONFIGURATION OPTIONS
+The configuration file
+.I theme.conf
+supports the following options:
+.TP
+.B current_theme
+Indicates the active theme, either "dark" or "light".
+
+.TP
+.B set_nvim_theme
+Boolean option to enable or disable theme switching for Neovim. Default is true.
+
+.TP
+.B set_vim_theme
+Boolean option to enable or disable theme switching for Vim. Default is true.
+
+.TP
+.B set_kitty_theme
+Boolean option to enable or disable theme switching for Kitty. Default is true.
+
+.TP
+.B nvim_theme, vim_theme, kitty_theme
+Paths to the respective theme configuration files for Neovim, Vim, and Kitty. Allows custom paths to be specified in
+.I theme.conf.
 
 .SH EXAMPLES
 .TP
@@ -55,7 +87,7 @@ theme-switch -v
 .SH FILES
 .BR $HOME/.config/theme-switch/theme.conf
 .RS
-Configuration file that stores the current theme state (dark or light).
+Configuration file that stores the current theme state (dark or light) and application settings.
 .RE
 
 .BR $HOME/.config/theme-switch/templates/
@@ -65,7 +97,6 @@ Directory containing theme templates for each application.
 
 .SH AUTHOR
 Written by caesar003.
-
 
 .SH COPYRIGHT
 This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.

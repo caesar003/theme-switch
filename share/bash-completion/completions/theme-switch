@@ -1,18 +1,18 @@
 # Completion script for theme-switch.sh
 
 _theme_switch_completion() {
-    local cur prev opts
-    COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="-v --version -t --toggle"
+	local cur prev opts
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+	prev="${COMP_WORDS[COMP_CWORD - 1]}"
+	opts="-v --version -t --toggle"
 
-    case "$prev" in
-        theme-switch.sh)
-            COMPREPLY=( $(compgen -W "$opts" -- "$cur") )
-            return 0
-            ;;
-    esac
+	case "$prev" in
+	theme-switch.sh)
+		COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+		return 0
+		;;
+	esac
 }
 
 # Register the completion function for theme-switch.sh

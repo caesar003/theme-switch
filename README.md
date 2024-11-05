@@ -67,14 +67,23 @@ man theme-switch
 
 ## Configuration
 
-Configuration files are stored in `~/.config/theme-switch/`. You’ll find the following:
+Configuration files are stored in `~/.config/theme-switch/`. Here’s an overview:
 
 -   **Templates**: Modify the theme files in `~/.config/theme-switch/templates/` to customize your themes.
     -   `nvim-dark`, `nvim-light`: Neovim themes
     -   `kitty-dark`, `kitty-light`: Kitty themes
--   **`theme.conf`**: Tracks the currently active theme (either `dark` or `light`). This file is managed automatically when you use `theme-switch -t`.
+    -   `vim-dark`, `vim-light`: Vim themes
 
-Feel free to edit the templates to change the appearance of your applications.
+-   **`theme.conf`**: The main configuration file that tracks the current theme and settings for each application. The available options are:
+
+    -   `current_theme`: Specifies the active theme, either `dark` or `light`.
+    -   `set_nvim_theme`: Controls whether to apply themes to Neovim (default: `true`).
+    -   `set_vim_theme`: Controls whether to apply themes to Vim (default: `true`).
+    -   `set_kitty_theme`: Controls whether to apply themes to Kitty (default: `true`).
+    -   `nvim_theme`, `vim_theme`, `kitty_theme`: Paths to the theme configuration files for Neovim, Vim, and Kitty, allowing you to specify custom paths if desired.
+
+Update `theme.conf` to customize theme switching behavior and specify paths if they differ from the default setup.
+
 
 ## Uninstallation
 

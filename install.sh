@@ -23,6 +23,8 @@ install -Dm644 config/theme-switch/templates/kitty-dark "$CONFIG_DIR/templates/k
 install -Dm644 config/theme-switch/templates/kitty-light "$CONFIG_DIR/templates/kitty-light"
 install -Dm644 config/theme-switch/templates/nvim-dark "$CONFIG_DIR/templates/nvim-dark"
 install -Dm644 config/theme-switch/templates/nvim-light "$CONFIG_DIR/templates/nvim-light"
+install -Dm644 config/theme-switch/templates/vim-dark "$CONFIG_DIR/templates/vim-dark"
+install -Dm644 config/theme-switch/templates/vim-light "$CONFIG_DIR/templates/vim-light"
 install -Dm644 config/theme-switch/theme.conf "$CONFIG_DIR/theme.conf"
 
 # Step 3: Install bash completion script
