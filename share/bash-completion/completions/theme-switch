@@ -1,17 +1,44 @@
 # Completion script for theme-switch.sh
 
 _theme_switch_completion() {
-	local cur prev opts
+	local cur prev opts program_opts vim_themes kitty_themes
+
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="-v --version -t --toggle"
+	opts="-v --version -t --toggle -s --set"
+	program_opts="--vim --nvim --kitty"
+
+	# Load theme files for vim/nvim and kitty
+	vim_themes=$(basename -s .vim ~/.config/theme-switch/vim-themes/*.vim 2>/dev/null)
+	kitty_themes=$(basename -s .conf ~/.config/theme-switch/kitty-themes/*.conf 2>/dev/null)
 
 	case "$prev" in
-	theme-switch.sh)
-		COMPREPLY=($(compgen -W "$opts" -- "$cur"))
-		return 0
-		;;
+		theme-switch.sh)
+			COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+			return 0
+			;;
+		-s | --set)
+			COMPREPLY=($(compgen -W "dark light" -- "$cur"))
+			return 0
+			;;
+		--vim|--nvim)
+			# Provide Vim/Neovim colorschemes
+			COMPREPLY=($(compgen -W "$vim_themes" -- "$cur"))
+			return 0
+			;;
+		--kitty)
+			# Provide Kitty themes
+			COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
+			return 0
+			;;
+		*)
+			if [[ "$prev" == "-s" || "$prev" == "--set" ]]; then
+				# Suggest program options after -s or --set
+				COMPREPLY=($(compgen -W "$program_opts" -- "$cur"))
+			fi
+			return 0
+			;;
 	esac
 }
 

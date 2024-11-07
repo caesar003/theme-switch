@@ -1,6 +1,6 @@
 # Theme Switch
 
-`theme-switch` is a simple CLI tool to toggle between light and dark themes for Neovim and Kitty. With customizable templates, it allows you to set up and switch themes effortlessly from the command line, quite useful for those who are ocasionally code from indoor to outdoor and vice versa.
+`theme-switch` is a simple CLI tool to toggle between light and dark themes for Neovim, Kitty, and Vim. Designed for developers who frequently move between indoor and outdoor environments, it allows effortless theme switching with customizable templates.
 
 ## Table of Contents
 
@@ -13,31 +13,33 @@
 
 ## Features
 
--   Toggle between light and dark themes for Neovim and Kitty with a single command.
--   Auto-completion support for easy command usage.
--   Man page documentation included.
--   Configurable templates for both themes, allowing full customization.
+-   Quickly toggle between light and dark themes for Neovim, Kitty, and Vim.
+-   Auto-completion support for streamlined command usage.
+-   Built-in man page documentation.
+-   Customizable templates for each theme mode, offering complete control over theme settings.
 
 ## Installation
 
-For Debian-based systems, the easiest way to install `theme-switch` is by downloading the `.deb` package from the [releases page](https://github.com/yourusername/theme-switch/releases).
+For Debian-based systems, install `theme-switch` by downloading the `.deb` package from the [releases page](https://github.com/caesar003/theme-switch/releases).
 
 1. **Download the .deb package**:
 
     ```bash
-    wget https://github.com/yourusername/theme-switch/releases/download/v1.0/theme-switch_1.0_amd64.deb
+    wget https://github.com/caesar003/theme-switch/releases/download/v1.0/theme-switch_1.0_amd64.deb
     ```
 
 2. **Install the package**:
+
     ```bash
-    sudo dpkg -i theme-switch_1.0_amd64.deb
+    sudo dpkg -i theme-switch*.deb
     ```
 
-Alternatively, to install from source:
+### Install from Source
 
 1. Clone this repository and run the `install.sh` script with `sudo`:
+
     ```bash
-    git clone https://github.com/yourusername/theme-switch.git
+    git clone https://github.com/caesar003/theme-switch.git
     cd theme-switch
     sudo ./install.sh
     ```
@@ -46,20 +48,27 @@ Alternatively, to install from source:
 
 ### Commands
 
--   **`-t` or `--toggle`**: Toggle between light and dark themes.
+-   **`-t` or `--toggle`**: Toggles the current theme (dark to light or vice versa).
 
     ```bash
     theme-switch -t
     ```
 
--   **`-v` or `--version`**: Display the current version of the program.
+-   **`-v` or `--version`**: Displays the current version of the program.
+
     ```bash
     theme-switch -v
     ```
 
+-   **`-s` or `--set <mode> [--vim | --nvim | --kitty] <colorscheme>`**: Sets a specified application’s theme in a particular mode (dark or light) with the chosen colorscheme.
+
+    ```bash
+    theme-switch -s dark --nvim gruvbox
+    ```
+
 ### Manual Page
 
-For detailed usage, you can access the manual page:
+For detailed usage information, access the manual page:
 
 ```bash
 man theme-switch
@@ -67,34 +76,36 @@ man theme-switch
 
 ## Configuration
 
-Configuration files are stored in `~/.config/theme-switch/`. Here’s an overview:
+Configuration files are located in `~/.config/theme-switch/`. Here’s an overview:
 
--   **Templates**: Modify the theme files in `~/.config/theme-switch/templates/` to customize your themes.
-    -   `nvim-dark`, `nvim-light`: Neovim themes
-    -   `kitty-dark`, `kitty-light`: Kitty themes
-    -   `vim-dark`, `vim-light`: Vim themes
+-   **Templates**: Customize your themes by modifying files in `~/.config/theme-switch/templates/`.
 
--   **`theme.conf`**: The main configuration file that tracks the current theme and settings for each application. The available options are:
+    -   `nvim-dark`, `nvim-light`: Neovim themes.
+    -   `kitty-dark`, `kitty-light`: Kitty themes.
+    -   `vim-dark`, `vim-light`: Vim themes.
+
+-   **`theme.conf`**: The main configuration file, which tracks the current theme and application settings.
+
+    Key options include:
 
     -   `current_theme`: Specifies the active theme, either `dark` or `light`.
-    -   `set_nvim_theme`: Controls whether to apply themes to Neovim (default: `true`).
-    -   `set_vim_theme`: Controls whether to apply themes to Vim (default: `true`).
-    -   `set_kitty_theme`: Controls whether to apply themes to Kitty (default: `true`).
-    -   `nvim_theme`, `vim_theme`, `kitty_theme`: Paths to the theme configuration files for Neovim, Vim, and Kitty, allowing you to specify custom paths if desired.
+    -   `set_nvim_theme`: Controls whether themes are applied to Neovim (default: `true`).
+    -   `set_vim_theme`: Controls whether themes are applied to Vim (default: `true`).
+    -   `set_kitty_theme`: Controls whether themes are applied to Kitty (default: `true`).
+    -   `nvim_theme`, `vim_theme`, `kitty_theme`: Paths to theme configuration files, allowing customization if needed.
 
-Update `theme.conf` to customize theme switching behavior and specify paths if they differ from the default setup.
-
+Update `theme.conf` to control which applications are affected by theme switching and to specify custom theme paths.
 
 ## Uninstallation
 
-To remove `theme-switch`, you can manually delete the following:
+To manually remove `theme-switch`, delete the following files and directories:
 
 1. **Main Script**: `/usr/local/bin/theme-switch`
 2. **Configuration Directory**: `~/.config/theme-switch/`
 3. **Completion Script**: `/etc/bash_completion.d/theme-switch`
 4. **Manual Page**: `/usr/local/share/man/man1/theme-switch.1`
 
-Alternatively, you can create an `uninstall.sh` script to automate this if desired.
+Alternatively, an `uninstall.sh` script can be created to automate this process.
 
 ## License
 
@@ -102,14 +113,20 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-## Example
+## Examples
 
-Here’s an example of switching themes:
+Here are some example commands for using `theme-switch`:
 
 ```bash
-# To toggle themes:
+# Toggle between light and dark themes:
 theme-switch -t
 
-# To check the version:
+# Check the current version:
 theme-switch -v
+
+# Set the Neovim theme to 'gruvbox' in dark mode:
+theme-switch -s dark --nvim gruvbox
+
+# Set the Kitty theme to 'tokyonight' in light mode:
+theme-switch -s light --kitty tokyonight
 ```
