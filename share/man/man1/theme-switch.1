@@ -1,4 +1,4 @@
-.TH THEME-SWITCH 1 "November 2024" "Version 1.0.4" "User Commands"
+.TH THEME-SWITCH 1 "November 2024" "Version 1.0.5" "User Commands"
 .SH NAME
 theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim
 
@@ -8,6 +8,8 @@ theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim
 .RB [ --version ]
 .RB [ -t ]
 .RB [ --toggle ]
+.RB [ -d ]
+.RB [ --detail ]
 
 .SH DESCRIPTION
 .B theme-switch
@@ -35,6 +37,10 @@ or
 followed by the 
 .IR <colorscheme>
 name.
+
+.TP
+.BR -d ", " --detail
+Displays the current theme and the colorscheme settings for each supported application. This provides a quick view of the active theme configuration.
 
 .SH CONFIGURATION
 The script requires a configuration directory located at
@@ -96,6 +102,11 @@ theme-switch -t
 Check the version:
 .B
 theme-switch -v
+
+.TP
+Show current theme details:
+.B
+theme-switch -d
 
 .TP
 Set Neovim to the "gruvbox" colorscheme in dark mode:

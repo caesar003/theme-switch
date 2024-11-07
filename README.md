@@ -15,6 +15,7 @@
 
 -   Quickly toggle between light and dark themes for Neovim, Kitty, and Vim.
 -   Auto-completion support for streamlined command usage.
+-   Detailed view option for checking theme settings across all applications.
 -   Built-in man page documentation.
 -   Customizable templates for each theme mode, offering complete control over theme settings.
 
@@ -58,6 +59,12 @@ For Debian-based systems, install `theme-switch` by downloading the `.deb` packa
 
     ```bash
     theme-switch -v
+    ```
+
+-   **`-d` or `--detail`**: Shows the current theme setting and details for each application (Neovim, Kitty, Vim).
+
+    ```bash
+    theme-switch -d
     ```
 
 -   **`-s` or `--set <mode> [--vim | --nvim | --kitty] <colorscheme>`**: Sets a specified application’s theme in a particular mode (dark or light) with the chosen colorscheme.
@@ -123,6 +130,9 @@ theme-switch -t
 
 # Check the current version:
 theme-switch -v
+
+# View detailed theme settings for each application:
+theme-switch -d
 
 # Set the Neovim theme to 'gruvbox' in dark mode:
 theme-switch -s dark --nvim gruvbox

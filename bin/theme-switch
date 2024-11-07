@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Version number
-VERSION="1.0.4"
+VERSION="1.0.5"
 
 # Configuration Directories and Paths
 ROOT_CONFIG_DIR="$HOME/.config"
@@ -28,6 +28,21 @@ load_config() {
 	else
 		echo "Configuration file $THEME_CONF not found, using default settings."
 	fi
+}
+
+# Function to get current theme details
+show_details() {
+	load_config
+	# Read colorschemes from respective files
+	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME" | head -n 1)
+	nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME" | head -n 1)
+	kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME" | head -n 1)
+
+	# Display details
+	echo "Current theme: $current_theme"
+	echo "Vim colorscheme: ${vim_colorscheme:-Not set}"
+	echo "Neovim colorscheme: ${nvim_colorscheme:-Not set}"
+	echo "Kitty theme: ${kitty_theme:-Not set}"
 }
 
 # Function to set the dark theme
@@ -136,6 +151,9 @@ case "$1" in
 	fi
 	set_theme "$2" "$3" "$4"
 	;;
+-d | --detail)
+	show_details
+	;;
 *)
 	echo "Usage: $0 [option]"
 	echo "Options:"
@@ -143,5 +161,6 @@ case "$1" in
 	echo "  -t, --toggle          Toggle between dark and light themes"
 	echo "  -s, --set <theme>     Set a specific theme and colorscheme for a program"
 	echo "                        Example: $0 -s dark --nvim gruvbox"
+	echo "  -d, --detail          Show current theme details"
 	;;
 esac
