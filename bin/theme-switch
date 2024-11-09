@@ -1,27 +1,263 @@
 #!/bin/bash
 
 # Version number
-VERSION="1.0.5"
+VERSION="1.1.0"
 
-# Configuration Directories and Paths
 ROOT_CONFIG_DIR="$HOME/.config"
 CONFIG_DIR="$HOME/.config/theme-switch"
 THEME_CONF="$CONFIG_DIR/theme.conf"
+TEMPLATE_DIR="$CONFIG_DIR/templates"
 
-# Default Paths to theme files (these will be overridden if specified in the config file)
 NVIM_THEME="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
 VIM_THEME="$HOME/.vim/theme.vim"
 KITTY_THEME="$ROOT_CONFIG_DIR/kitty/theme.conf"
 
-# Paths to template files
-NVIM_DARK_TEMPLATE="$CONFIG_DIR/templates/nvim-dark"
-NVIM_LIGHT_TEMPLATE="$CONFIG_DIR/templates/nvim-light"
-VIM_DARK_TEMPLATE="$CONFIG_DIR/templates/vim-dark"
-VIM_LIGHT_TEMPLATE="$CONFIG_DIR/templates/vim-light"
-KITTY_DARK_TEMPLATE="$CONFIG_DIR/templates/kitty-dark"
-KITTY_LIGHT_TEMPLATE="$CONFIG_DIR/templates/kitty-light"
+NVIM_DARK_TEMPLATE="$TEMPLATE_DIR/nvim-dark"
+NVIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/nvim-light"
+VIM_DARK_TEMPLATE="$TEMPLATE_DIR/vim-dark"
+VIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/vim-light"
+KITTY_DARK_TEMPLATE="$TEMPLATE_DIR/kitty-dark"
+KITTY_LIGHT_TEMPLATE="$TEMPLATE_DIR/kitty-light"
 
-# Load configuration from theme.conf if it exists
+declare -A vim_dark_themes
+vim_dark_themes=(
+	["1"]="gruvbox"
+	["2"]="tokyonight"
+	["3"]="rosepine"
+	["4"]="catppuccin_mocha"
+	["5"]="monokai"
+)
+
+declare -A vim_dark_themes_display
+vim_dark_themes_display=(
+	["1"]="Gruvbox (default)"
+	["2"]="Tokyonight"
+	["3"]="Rosé Pine"
+	["4"]="Catppuccin"
+	["5"]="Monokai"
+)
+
+declare -A vim_light_themes
+vim_light_themes=(
+	["1"]="paper"
+	["2"]="tokyonight"
+	["3"]="rosepine"
+	["4"]="catppuccin_latte"
+	["5"]="material"
+)
+
+declare -A vim_light_themes_display
+vim_light_themes_display=(
+	["1"]="Paper (default)"
+	["2"]="Rosé Pine"
+	["3"]="Catppuccin"
+	["4"]="Gruvbox"
+	["5"]="Material"
+)
+
+declare -A kitty_dark_themes
+kitty_dark_themes=(
+	["1"]="adwaita_dark"
+	["2"]="Atom"
+	["3"]="Catppuccin-Mocha"
+	["4"]="gruvbox-dark"
+	["5"]="rose-pine-moon"
+)
+
+declare -A kitty_light_themes
+kitty_light_themes=(
+	["1"]="adwaita_light"
+	["2"]="AtomOneLight"
+	["3"]="Catppuccin-Latte"
+	["4"]="gruvbox-light"
+	["5"]="rose-pine-dawn"
+)
+
+declare -A kitty_dark_themes_display
+kitty_dark_themes_display=(
+	["1"]="Adwaita Dark (default)"
+	["2"]="Atom"
+	["3"]="Catppuccin Mocha"
+	["4"]="Gruvbox Dark"
+	["5"]="Rosé Pine Moon"
+)
+
+declare -A kitty_light_themes_display
+kitty_light_themes_display=(
+	["1"]="Adwaita Light (default)"
+	["2"]="Atom One Light"
+	["3"]="Catppuccin Latte"
+	["4"]="Gruvbox Light"
+	["5"]="Rosé Pine Dawn"
+)
+
+generate_config() {
+	read -p "Your default theme? light/dark (default dark): " user_theme
+	selected_theme="${user_theme:-dark}"
+
+	read -p "Are you using Vim? y/n (default yes): " use_vim
+	set_vim_theme=true
+	if [[ "$use_vim" =~ ^(n|N) ]]; then
+		set_vim_theme=false
+	fi
+
+	read -p "Are you using Kitty? y/n (default yes): " use_kitty
+	set_kitty_theme=true
+	if [[ "$use_kitty" =~ ^(n|N) ]]; then
+		set_kitty_theme=false
+	fi
+
+	read -p "Are you using Neovim? y/n (default yes): " use_nvim
+	set_nvim_theme=true
+	if [[ "$use_nvim" =~ ^(n|N) ]]; then
+		set_nvim_theme=false
+	fi
+
+	read -p "Path to Neovim theme file (default $NVIM_THEME_FILE): " nvim_theme
+	nvim_theme="${nvim_theme:-$NVIM_THEME_FILE}"
+
+	read -p "Path to Vim theme file (default $VIM_THEME_FILE): " vim_theme
+	vim_theme="${vim_theme:-$VIM_THEME_FILE}"
+
+	read -p "Path to Kitty theme file (default $KITTY_THEME_FILE): " kitty_theme
+	kitty_theme="${kitty_theme:-$KITTY_THEME_FILE}"
+
+	cat <<EOL >"$THEME_CONFIG_FILE"
+current_theme=$selected_theme
+
+set_kitty_theme=$set_kitty_theme
+set_nvim_theme=$set_nvim_theme
+set_vim_theme=$set_vim_theme
+
+nvim_theme=$nvim_theme
+vim_theme=$vim_theme
+kitty_theme=$kitty_theme
+EOL
+
+}
+
+show_prompt() {
+	local -n themes=$1
+	for key in "${!themes[@]}"; do
+		echo -e "\t$key) ${themes[$key]}"
+	done
+	echo ""
+}
+
+select_theme() {
+	local -n themes=$1
+	local default_choice=$2
+
+	read -p "Pick the number or press enter to accept default ($default_choice): " choice
+	choice="${choice:-$default_choice}"
+
+	echo "${themes[$choice]}"
+}
+
+initialize_config() {
+	mkdir -p $TEMPLATE_DIR
+	generate_config
+
+	echo ""
+	echo "Choose Kitty Dark Theme (you can change this later):"
+	show_prompt kitty_dark_themes_display
+	kitty_dark_theme_name=$(select_theme kitty_dark_themes "1")
+
+	echo ""
+	echo "Choose Kitty Light Theme (you can change this later):"
+	show_prompt kitty_light_themes_display
+	kitty_light_theme_name=$(select_theme kitty_light_themes "1")
+
+	echo ""
+	echo "Choose Vim Dark Theme (you can change this later):"
+	show_prompt vim_dark_themes_display
+	vim_dark_theme_name=$(select_theme vim_dark_themes "1")
+
+	echo ""
+	echo "Choose Vim Light Theme (you can change this later):"
+	show_prompt vim_light_themes_display
+	vim_light_theme_name=$(select_theme vim_light_themes "1")
+
+	echo ""
+	echo "Choose Neovim Dark Theme (you can change this later):"
+	show_prompt vim_dark_themes_display
+	nvim_dark_theme_name=$(select_theme vim_dark_themes "1")
+
+	echo ""
+	echo "Choose Neovim Light Theme (you can change this later):"
+	show_prompt vim_light_themes_display
+	nvim_light_theme_name=$(select_theme vim_light_themes "1")
+
+	cat <<EOL >"$KITTY_DARK_TEMPLATE"
+include ./themes/$kitty_dark_theme_name.conf
+background_opacity 1.00
+EOL
+
+	cat <<EOL >"$KITTY_LIGHT_TEMPLATE"
+include ./themes/$kitty_light_theme_name.conf
+background_opacity 1.00
+EOL
+
+	cat <<EOL >"$VIM_DARK_TEMPLATE"
+set background=dark
+colorscheme $vim_dark_theme_name
+EOL
+
+	cat <<EOL >"$VIM_LIGHT_TEMPLATE"
+set background=light
+colorscheme $vim_light_theme_name
+EOL
+
+	cat <<EOL >"$NVIM_DARK_TEMPLATE"
+vim.cmd.colorscheme("$nvim_dark_theme_name")
+vim.opt.background = "dark"
+EOL
+
+	cat <<EOL >"$NVIM_LIGHT_TEMPLATE"
+vim.cmd.colorscheme("$nvim_light_theme_name")
+vim.opt.background = "light"
+EOL
+
+	echo "Configuration written to $THEME_CONFIG_FILE, kitty-dark, kitty-light, vim-dark, vim-light, nvim-dark, and nvim-light with the following settings:"
+
+	echo -e "\tTheme: $selected_theme"
+	echo -e "\tset_kitty_theme: $set_kitty_theme"
+	echo -e "\tset_nvim_theme: $set_nvim_theme"
+	echo -e "\tset_vim_theme: $set_vim_theme"
+	echo -e "\tnvim_theme path: $nvim_theme"
+	echo -e "\tvim_theme path: $vim_theme"
+	echo -e "\tkitty_theme path: $kitty_theme"
+	echo -e "\tKitty dark theme: $kitty_dark_theme_name"
+	echo -e "\tKitty light theme: $kitty_light_theme_name"
+	echo -e "\tVim dark theme: $vim_dark_theme_name"
+	echo -e "\tVim light theme: $vim_light_theme_name"
+	echo -e "\tNeovim dark theme: $nvim_dark_theme_name"
+	echo -e "\tNeovim light theme: $nvim_light_theme_name"
+}
+
+check_user_config() {
+	if [ ! -d "$CONFIG_DIR" ]; then
+		echo "Configuration directory '$CONFIG_DIR' not found."
+		echo "Would you like to create it now? (Y/n): "
+		read -r create_config
+
+		if [[ "$create_config" =~ ^[Yy]$ ]]; then
+			initialize_config
+		else
+			echo "Exiting..."
+			exit 1
+		fi
+	fi
+
+	for template in "$NVIM_DARK_TEMPLATE" "$NVIM_LIGHT_TEMPLATE" "$VIM_DARK_TEMPLATE" "$VIM_LIGHT_TEMPLATE" "$KITTY_DARK_TEMPLATE" "$KITTY_LIGHT_TEMPLATE"; do
+		if [ ! -f "$template" ]; then
+			echo "Error: Template file '$template' not found."
+			echo "Please create the missing template files."
+			exit 1
+		fi
+	done
+}
+
 load_config() {
 	if [ -f "$THEME_CONF" ]; then
 		source "$THEME_CONF"
@@ -30,22 +266,18 @@ load_config() {
 	fi
 }
 
-# Function to get current theme details
 show_details() {
 	load_config
-	# Read colorschemes from respective files
 	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME" | head -n 1)
 	nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME" | head -n 1)
 	kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME" | head -n 1)
 
-	# Display details
 	echo "Current theme: $current_theme"
 	echo "Vim colorscheme: ${vim_colorscheme:-Not set}"
 	echo "Neovim colorscheme: ${nvim_colorscheme:-Not set}"
 	echo "Kitty theme: ${kitty_theme:-Not set}"
 }
 
-# Function to set the dark theme
 set_dark_theme() {
 	if [ "${set_nvim_theme:-true}" = "true" ]; then
 		cp "$NVIM_DARK_TEMPLATE" "$NVIM_THEME"
@@ -66,7 +298,6 @@ set_dark_theme() {
 	echo "Switched to dark theme."
 }
 
-# Function to set the light theme
 set_light_theme() {
 	if [ "${set_nvim_theme:-true}" = "true" ]; then
 		cp "$NVIM_LIGHT_TEMPLATE" "$NVIM_THEME"
@@ -87,9 +318,11 @@ set_light_theme() {
 	echo "Switched to light theme."
 }
 
-# Function to toggle the theme based on the current setting
 toggle_theme() {
+	check_user_config
 	load_config
+
+	# Proceed to toggle the theme if all checks passed
 	if [ "$current_theme" = "dark" ]; then
 		set_light_theme
 	else
@@ -97,8 +330,8 @@ toggle_theme() {
 	fi
 }
 
-# Function to set a specific theme with a colorscheme
 set_theme() {
+	check_user_config
 	theme="$1"
 	program="$2"
 	colorscheme="$3"
@@ -130,12 +363,10 @@ set_theme() {
 	echo "current_theme=$theme" >"$THEME_CONF"
 }
 
-# Display the version information
 show_version() {
 	echo "Theme Switcher Script, Version $VERSION"
 }
 
-# Main Logic: Parse Command-Line Arguments
 case "$1" in
 -v | --version)
 	show_version
@@ -144,7 +375,6 @@ case "$1" in
 	toggle_theme
 	;;
 -s | --set)
-	# Ensure the required arguments for -s/--set are provided
 	if [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
 		echo "Usage: $0 -s <light|dark> --<vim|nvim|kitty> <colorscheme>"
 		exit 1
