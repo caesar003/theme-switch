@@ -1,12 +1,17 @@
 #!/bin/bash
 
 # Version number
-VERSION="1.1.0"
+VERSION="1.1.1"
 
 ROOT_CONFIG_DIR="$HOME/.config"
 CONFIG_DIR="$HOME/.config/theme-switch"
 THEME_CONF="$CONFIG_DIR/theme.conf"
 TEMPLATE_DIR="$CONFIG_DIR/templates"
+
+
+NVIM_CONFIG_DIR=$ROOT_CONFIG_DIR/nvim
+VIM_CONFIG_DIR=$HOME/.vim
+KITTY_CONFIG_DIR=$ROOT_CONFIG_DIR/kitty
 
 NVIM_THEME="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
 VIM_THEME="$HOME/.vim/theme.vim"
@@ -18,6 +23,19 @@ VIM_DARK_TEMPLATE="$TEMPLATE_DIR/vim-dark"
 VIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/vim-light"
 KITTY_DARK_TEMPLATE="$TEMPLATE_DIR/kitty-dark"
 KITTY_LIGHT_TEMPLATE="$TEMPLATE_DIR/kitty-light"
+
+
+VIM_THEME_DIR=$CONFIG_DIR/vim-themes
+KITTY_THEME_DIR=$CONFIG_DIR/kitty-themes
+
+
+ISSUES_FILE="/etc/theme-switch/issues.txt"
+
+
+
+REPO_LIST="/etc/theme-switch/repo-list.json"
+TEMP_DIR=$(mktemp -d)
+
 
 declare -A vim_dark_themes
 vim_dark_themes=(
@@ -91,7 +109,73 @@ kitty_light_themes_display=(
 	["5"]="Rosé Pine Dawn"
 )
 
+
+clone_repo() {
+	local id=$1
+	local theme=$2
+	local repo=$3
+
+	# Clone the repository into the temporary directory
+	git clone "$repo" "$TEMP_DIR/$id" || {
+		echo "Failed to clone $repo"
+		return 1
+	}
+
+	# Handle themes based on type
+	if [[ "$theme" == "kitty" ]]; then
+		cp -r "$TEMP_DIR/$id/themes/"* "$KITTY_THEME_DIR"
+	elif [[ "$theme" == "vim" ]]; then
+		cp -r "$TEMP_DIR/$id/colors/"* "$VIM_THEME_DIR"
+	else
+		echo "Unknown theme type: $theme"
+		return 1
+	fi
+}
+
+clone_theme() {
+
+  mkdir -p "$VIM_THEME_DIR" "$KITTY_THEME_DIR"
+	# Read each entry in repo-list.json
+	jq -c '.[]' "$REPO_LIST" | while read -r entry; do
+		# Parse JSON values
+		id=$(echo "$entry" | jq -r '.id')
+		theme=$(echo "$entry" | jq -r '.theme')
+		repo=$(echo "$entry" | jq -r '.repo')
+
+		# Clone and copy themes
+		clone_repo "$id" "$theme" "$repo"
+	done
+
+	# Remove conflicting directories if they exist and create symbolic links
+	[ -d "$VIM_CONFIG_DIR/colors" ] && rm -rf "$VIM_CONFIG_DIR/colors"
+	ln -sf "$VIM_THEME_DIR" "$VIM_CONFIG_DIR/colors"
+
+	[ -d "$NVIM_CONFIG_DIR/colors" ] && rm -rf "$NVIM_CONFIG_DIR/colors"
+	ln -sf "$VIM_THEME_DIR" "$NVIM_CONFIG_DIR/colors"
+
+	[ -d "$KITTY_CONFIG_DIR/themes" ] && rm -rf "$KITTY_CONFIG_DIR/themes"
+	ln -sf "$KITTY_THEME_DIR" "$KITTY_CONFIG_DIR/themes"
+
+	# Cleanup temporary directory
+	rm -rf "$TEMP_DIR"
+	echo "Themes installed and linked successfully."
+
+	# Cleanup broken themes listed in issues.txt
+	if [ -f "$ISSUES_FILE" ]; then
+		while read -r theme_file; do
+			target_file="$VIM_THEME_DIR/$theme_file"
+			if [ -f "$target_file" ]; then
+				rm "$target_file"
+				echo "Removed broken theme: $theme_file"
+			fi
+		done <"$ISSUES_FILE"
+	else
+		echo "No $ISSUES_FILE file found, skipping broken themes removal."
+	fi
+}
+
 generate_config() {
+  clone_theme
 	read -p "Your default theme? light/dark (default dark): " user_theme
 	selected_theme="${user_theme:-dark}"
 
@@ -133,6 +217,8 @@ nvim_theme=$nvim_theme
 vim_theme=$vim_theme
 kitty_theme=$kitty_theme
 EOL
+
+
 
 }
 

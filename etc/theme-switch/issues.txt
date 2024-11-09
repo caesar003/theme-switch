@@ -1,0 +1,9 @@
+everforest.vim
+OceanicNextLight.vim
+OceanicNext.vim
+onedark.vim
+purify.vim
+soft-stone.vim
+sonokai.vim
+srcery.vim
+yowish.vim
