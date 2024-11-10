@@ -1,17 +1,20 @@
 # Completion script for theme-switch.sh
 
 _theme_switch_completion() {
-	local cur prev opts program_opts vim_themes kitty_themes
+	local cur prev opts program_opts vim_themes kitty_themes opacity_opts
 
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="-v --version -t --toggle -s --set -d --detail"  
+	opts="-v --version -t --toggle -s --set -d --detail -o --opacity"  
 	program_opts="--vim --nvim --kitty"
 
 	# Load theme files for vim/nvim and kitty
 	vim_themes=$(basename -s .vim ~/.config/theme-switch/vim-themes/*.vim 2>/dev/null)
 	kitty_themes=$(basename -s .conf ~/.config/theme-switch/kitty-themes/*.conf 2>/dev/null)
+
+	# Load opacity options (if any) for Kitty, Neovim, and Vim
+  opacity_opts="0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0"
 
 	case "$prev" in
 		theme-switch.sh)
@@ -30,6 +33,11 @@ _theme_switch_completion() {
 		--kitty)
 			# Provide Kitty themes
 			COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
+			return 0
+			;;
+		-o | --opacity)
+			# Suggest opacity values
+			COMPREPLY=($(compgen -W "$opacity_opts" -- "$cur"))
 			return 0
 			;;
 		*)

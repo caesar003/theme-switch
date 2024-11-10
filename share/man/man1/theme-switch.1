@@ -1,6 +1,6 @@
-.TH THEME-SWITCH 1 "November 2024" "Version 1.1.1" "User Commands"
+.TH THEME-SWITCH 1 "November 2024" "Version 1.1.3" "User Commands"
 .SH NAME
-theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim
+theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim, with opacity support
 
 .SH SYNOPSIS
 .B theme-switch
@@ -8,12 +8,16 @@ theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim
 .RB [ --version ]
 .RB [ -t ]
 .RB [ --toggle ]
+.RB [ -s ]
+.RB [ --set ]
 .RB [ -d ]
 .RB [ --detail ]
+.RB [ -o ]
+.RB [ --opacity ]
 
 .SH DESCRIPTION
 .B theme-switch
-is a script designed to switch between light and dark themes for Neovim, Kitty, and Vim by copying pre-defined configuration templates. The script updates the current theme state and allows for quick toggling. Users can control which applications are affected by the theme switch through configuration options.
+is a script designed to switch between light and dark themes for Neovim, Kitty, and Vim by copying pre-defined configuration templates. The script updates the current theme state and allows for quick toggling. Users can control which applications are affected by the theme switch through configuration options. Additionally, it supports opacity adjustments for Kitty, Neovim, and Vim themes.
 
 .SH OPTIONS
 .TP
@@ -42,6 +46,10 @@ name.
 .BR -d ", " --detail
 Displays the current theme and the colorscheme settings for each supported application. This provides a quick view of the active theme configuration.
 
+.TP
+.BR -o ", " --opacity " " <value>
+Adjusts the opacity of the specified theme. The value should be a number between 0 and 100, where 0 is fully transparent and 100 is fully opaque. This option is supported for Kitty, Neovim, and Vim themes.
+
 .SH CONFIGURATION
 The script requires a configuration directory located at
 .BR $HOME/.config/theme-switch ,
@@ -49,7 +57,7 @@ which contains the following files:
 .RS
 .IP - 2
 .I theme.conf
-: Stores the current theme ("dark" or "light") and configuration options for each application.
+: Stores the current theme ("dark" or "light") and configuration options for each application, including opacity settings.
 .IP - 2
 .I nvim_theme
 : Path to the Neovim theme configuration file, customizable in
@@ -88,6 +96,10 @@ Boolean option to enable or disable theme switching for Vim. Default is true.
 Boolean option to enable or disable theme switching for Kitty. Default is true.
 
 .TP
+.B opacity
+Defines the opacity level for supported applications. A value between 0 and 100. Default is 100 (fully opaque). This option is customizable for Neovim, Vim, and Kitty themes.
+
+.TP
 .B nvim_theme, vim_theme, kitty_theme
 Paths to the respective theme configuration files for Neovim, Vim, and Kitty. Allows custom paths to be specified in
 .I theme.conf.
@@ -118,10 +130,15 @@ Set Kitty to the "tokyonight" colorscheme in light mode:
 .B
 theme-switch -s light --kitty tokyonight
 
+.TP
+Set dark Kitty theme with opacity of 50:
+.B
+theme-switch -o 50 dark
+
 .SH FILES
 .BR $HOME/.config/theme-switch/theme.conf
 .RS
-Configuration file that stores the current theme state (dark or light) and application settings.
+Configuration file that stores the current theme state (dark or light), application settings, and opacity options.
 .RE
 
 .BR $HOME/.config/theme-switch/templates/

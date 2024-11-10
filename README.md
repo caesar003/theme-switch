@@ -73,6 +73,12 @@ For Debian-based systems, install `theme-switch` by downloading the `.deb` packa
     theme-switch -s dark --nvim gruvbox
     ```
 
+-   **`-o` or `--opacity <mode>`**: Sets kitty transparency for light or dark theme.
+
+    ```bash
+    theme-switch -o dark 0.85
+    ```
+
 ### Manual Page
 
 For detailed usage information, access the manual page:
@@ -139,4 +145,7 @@ theme-switch -s dark --nvim gruvbox
 
 # Set the Kitty theme to 'tokyonight' in light mode:
 theme-switch -s light --kitty tokyonight
+
+# Set Kitty opacity of 85% for dark theme
+theme-switch -o 0.85 dark
 ```

@@ -1,21 +1,20 @@
 #!/bin/bash
 
 # Version number
-VERSION="1.1.1"
+VERSION="1.1.3"
 
 ROOT_CONFIG_DIR="$HOME/.config"
 CONFIG_DIR="$HOME/.config/theme-switch"
-THEME_CONF="$CONFIG_DIR/theme.conf"
+THEME_CONFIG_FILE="$CONFIG_DIR/theme.conf"
 TEMPLATE_DIR="$CONFIG_DIR/templates"
-
 
 NVIM_CONFIG_DIR=$ROOT_CONFIG_DIR/nvim
 VIM_CONFIG_DIR=$HOME/.vim
 KITTY_CONFIG_DIR=$ROOT_CONFIG_DIR/kitty
 
-NVIM_THEME="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
-VIM_THEME="$HOME/.vim/theme.vim"
-KITTY_THEME="$ROOT_CONFIG_DIR/kitty/theme.conf"
+NVIM_THEME_FILE="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+VIM_THEME_FILE="$HOME/.vim/theme.vim"
+KITTY_THEME_FILE="$ROOT_CONFIG_DIR/kitty/theme.conf"
 
 NVIM_DARK_TEMPLATE="$TEMPLATE_DIR/nvim-dark"
 NVIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/nvim-light"
@@ -24,18 +23,13 @@ VIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/vim-light"
 KITTY_DARK_TEMPLATE="$TEMPLATE_DIR/kitty-dark"
 KITTY_LIGHT_TEMPLATE="$TEMPLATE_DIR/kitty-light"
 
-
 VIM_THEME_DIR=$CONFIG_DIR/vim-themes
 KITTY_THEME_DIR=$CONFIG_DIR/kitty-themes
 
-
 ISSUES_FILE="/etc/theme-switch/issues.txt"
-
-
 
 REPO_LIST="/etc/theme-switch/repo-list.json"
 TEMP_DIR=$(mktemp -d)
-
 
 declare -A vim_dark_themes
 vim_dark_themes=(
@@ -109,7 +103,6 @@ kitty_light_themes_display=(
 	["5"]="Rosé Pine Dawn"
 )
 
-
 clone_repo() {
 	local id=$1
 	local theme=$2
@@ -134,13 +127,13 @@ clone_repo() {
 
 clone_theme() {
 
-  mkdir -p "$VIM_THEME_DIR" "$KITTY_THEME_DIR"
+	mkdir -p "$VIM_THEME_DIR" "$KITTY_THEME_DIR"
 	# Read each entry in repo-list.json
 	jq -c '.[]' "$REPO_LIST" | while read -r entry; do
 		# Parse JSON values
-		id=$(echo "$entry" | jq -r '.id')
-		theme=$(echo "$entry" | jq -r '.theme')
-		repo=$(echo "$entry" | jq -r '.repo')
+		local id=$(echo "$entry" | jq -r '.id')
+		local theme=$(echo "$entry" | jq -r '.theme')
+		local repo=$(echo "$entry" | jq -r '.repo')
 
 		# Clone and copy themes
 		clone_repo "$id" "$theme" "$repo"
@@ -163,7 +156,7 @@ clone_theme() {
 	# Cleanup broken themes listed in issues.txt
 	if [ -f "$ISSUES_FILE" ]; then
 		while read -r theme_file; do
-			target_file="$VIM_THEME_DIR/$theme_file"
+			local target_file="$VIM_THEME_DIR/$theme_file"
 			if [ -f "$target_file" ]; then
 				rm "$target_file"
 				echo "Removed broken theme: $theme_file"
@@ -175,9 +168,9 @@ clone_theme() {
 }
 
 generate_config() {
-  clone_theme
+	clone_theme
 	read -p "Your default theme? light/dark (default dark): " user_theme
-	selected_theme="${user_theme:-dark}"
+	local selected_theme="${user_theme:-dark}"
 
 	read -p "Are you using Vim? y/n (default yes): " use_vim
 	set_vim_theme=true
@@ -217,8 +210,6 @@ nvim_theme=$nvim_theme
 vim_theme=$vim_theme
 kitty_theme=$kitty_theme
 EOL
-
-
 
 }
 
@@ -345,18 +336,18 @@ check_user_config() {
 }
 
 load_config() {
-	if [ -f "$THEME_CONF" ]; then
-		source "$THEME_CONF"
+	if [ -f "$THEME_CONFIG_FILE" ]; then
+		source "$THEME_CONFIG_FILE"
 	else
-		echo "Configuration file $THEME_CONF not found, using default settings."
+		echo "Configuration file $THEME_CONFIG_FILE not found, using default settings."
 	fi
 }
 
 show_details() {
 	load_config
-	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME" | head -n 1)
-	nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME" | head -n 1)
-	kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME" | head -n 1)
+	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME_FILE" | head -n 1)
+	nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME_FILE" | head -n 1)
+	kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME_FILE" | head -n 1)
 
 	echo "Current theme: $current_theme"
 	echo "Vim colorscheme: ${vim_colorscheme:-Not set}"
@@ -366,41 +357,43 @@ show_details() {
 
 set_dark_theme() {
 	if [ "${set_nvim_theme:-true}" = "true" ]; then
-		cp "$NVIM_DARK_TEMPLATE" "$NVIM_THEME"
+		cp "$NVIM_DARK_TEMPLATE" "$NVIM_THEME_FILE"
 		echo "Applied dark theme to Neovim."
 	fi
 
 	if [ "${set_vim_theme:-true}" = "true" ]; then
-		cp "$VIM_DARK_TEMPLATE" "$VIM_THEME"
+		cp "$VIM_DARK_TEMPLATE" "$VIM_THEME_FILE"
 		echo "Applied dark theme to Vim."
 	fi
 
 	if [ "${set_kitty_theme:-true}" = "true" ]; then
-		cp "$KITTY_DARK_TEMPLATE" "$KITTY_THEME"
+		cp "$KITTY_DARK_TEMPLATE" "$KITTY_THEME_FILE"
 		echo "Applied dark theme to Kitty."
 	fi
 
-	echo "current_theme=dark" >"$THEME_CONF"
+	echo "Setting dark theme..."
+	sed -i "s/^current_theme=.*/current_theme=dark/" "$THEME_CONFIG_FILE"
 	echo "Switched to dark theme."
 }
 
 set_light_theme() {
 	if [ "${set_nvim_theme:-true}" = "true" ]; then
-		cp "$NVIM_LIGHT_TEMPLATE" "$NVIM_THEME"
+		cp "$NVIM_LIGHT_TEMPLATE" "$NVIM_THEME_FILE"
 		echo "Applied light theme to Neovim."
 	fi
 
 	if [ "${set_vim_theme:-true}" = "true" ]; then
-		cp "$VIM_LIGHT_TEMPLATE" "$VIM_THEME"
+		cp "$VIM_LIGHT_TEMPLATE" "$VIM_THEME_FILE"
 		echo "Applied light theme to Vim."
 	fi
 
 	if [ "${set_kitty_theme:-true}" = "true" ]; then
-		cp "$KITTY_LIGHT_TEMPLATE" "$KITTY_THEME"
+		cp "$KITTY_LIGHT_TEMPLATE" "$KITTY_THEME_FILE"
 		echo "Applied light theme to Kitty."
 	fi
 
-	echo "current_theme=light" >"$THEME_CONF"
+	echo "Setting light theme..."
+	sed -i "s/^current_theme=.*/current_theme=light/" "$THEME_CONFIG_FILE"
 	echo "Switched to light theme."
 }
 
@@ -418,24 +411,24 @@ toggle_theme() {
 
 set_theme() {
 	check_user_config
-	theme="$1"
-	program="$2"
-	colorscheme="$3"
+	local theme="$1"
+	local program="$2"
+	local colorscheme="$3"
 
 	case "$program" in
 	--vim)
 		template_file="$CONFIG_DIR/templates/vim-$theme"
-		output_file="$VIM_THEME"
+		output_file="$VIM_THEME_FILE"
 		sed -i "s/^colorscheme .*/colorscheme $colorscheme/" "$template_file"
 		;;
 	--nvim)
 		template_file="$CONFIG_DIR/templates/nvim-$theme"
-		output_file="$NVIM_THEME"
+		output_file="$NVIM_THEME_FILE"
 		sed -i "s|^vim\.cmd\.colorscheme(.*)|vim.cmd.colorscheme(\"$colorscheme\")|" "$template_file"
 		;;
 	--kitty)
 		template_file="$CONFIG_DIR/templates/kitty-$theme"
-		output_file="$KITTY_THEME"
+		output_file="$KITTY_THEME_FILE"
 		sed -i "s|^include ./themes/.*|include ./themes/$colorscheme.conf|" "$template_file"
 		;;
 	*)
@@ -446,11 +439,31 @@ set_theme() {
 
 	cp "$template_file" "$output_file"
 	echo "Applied $theme theme with colorscheme '$colorscheme' to $program."
-	echo "current_theme=$theme" >"$THEME_CONF"
+
+	sed -i "s/^current_theme=.*/current_theme=$theme/" "$THEME_CONFIG_FILE"
 }
 
 show_version() {
 	echo "Theme Switcher Script, Version $VERSION"
+}
+
+set_opacity() {
+	if [[ ! "$1" =~ ^[0-1](\.[0-9]{1,2})?$ ]] || (($(echo "$1 < 0.00" | bc -l) || $(echo "$1 > 1.00" | bc -l))); then
+		echo "Error: Opacity must be a number between 0.00 and 1.00"
+		return 1
+	fi
+
+	if [[ "$2" != "dark" && "$2" != "light" ]]; then
+		echo "Error: Theme must be either 'dark' or 'light'"
+		return 1
+	fi
+
+	KITTY_TEMPLATE_FILE="$TEMPLATE_DIR/kitty-$2"
+
+	local opacity=$1
+	local theme=$2
+	sed -i "s/^background_opacity=[^ ]*/background_opacity=$opacity/" "$KITTY_TEMPLATE_FILE"
+	echo "Setting opacity of $opacity to $KITTY_TEMPLATE_FILE"
 }
 
 case "$1" in
@@ -470,6 +483,9 @@ case "$1" in
 -d | --detail)
 	show_details
 	;;
+-o | --opacity)
+	set_opacity "$2" "$3"
+	;;
 *)
 	echo "Usage: $0 [option]"
 	echo "Options:"
@@ -477,6 +493,8 @@ case "$1" in
 	echo "  -t, --toggle          Toggle between dark and light themes"
 	echo "  -s, --set <theme>     Set a specific theme and colorscheme for a program"
 	echo "                        Example: $0 -s dark --nvim gruvbox"
+	echo "  -o, --opacity <theme> Set Kitty Opacity for specific theme"
+	echo "                        Example: $0 -o dark 0.90"
 	echo "  -d, --detail          Show current theme details"
 	;;
 esac
