@@ -73,5 +73,10 @@
     "id": 14,
     "theme": "vim",
     "repo": "https://github.com/catppuccin/vim"
+  },
+  {
+    "id": 15,
+    "theme": "vim",
+    "repo": "https://github.com/vv9k/bogster"
   }
 ]
