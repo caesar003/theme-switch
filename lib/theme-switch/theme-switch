@@ -1,0 +1,163 @@
+check_user_config() {
+	if [ ! -d "$CONFIG_DIR" ]; then
+		echo "Configuration directory '$CONFIG_DIR' not found."
+		echo "Would you like to create it now? (Y/n): "
+		read -r create_config
+
+		if [[ "$create_config" =~ ^[Yy]$ ]]; then
+			initialize_config
+		else
+			echo "Exiting..."
+			exit 1
+		fi
+	fi
+
+	for template in "$NVIM_DARK_TEMPLATE" "$NVIM_LIGHT_TEMPLATE" "$VIM_DARK_TEMPLATE" "$VIM_LIGHT_TEMPLATE" "$KITTY_DARK_TEMPLATE" "$KITTY_LIGHT_TEMPLATE"; do
+		if [ ! -f "$template" ]; then
+			echo "Error: Template file '$template' not found."
+			echo "Please create the missing template files."
+			exit 1
+		fi
+	done
+}
+
+load_config() {
+	if [ -f "$THEME_CONFIG_FILE" ]; then
+		source "$THEME_CONFIG_FILE"
+	else
+		echo "Configuration file $THEME_CONFIG_FILE not found, using default settings."
+	fi
+}
+
+show_details() {
+	load_config
+	local vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME_FILE" | head -n 1)
+	local nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME_FILE" | head -n 1)
+	local kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME_FILE" | head -n 1)
+
+	echo "Current theme: $current_theme"
+	echo "Vim colorscheme: ${vim_colorscheme:-Not set}"
+	echo "Neovim colorscheme: ${nvim_colorscheme:-Not set}"
+	echo "Kitty theme: ${kitty_theme:-Not set}"
+}
+
+set_dark_theme() {
+	if [ "${set_nvim_theme:-true}" = "true" ]; then
+		cp "$NVIM_DARK_TEMPLATE" "$NVIM_THEME_FILE"
+		echo "Applied dark theme to Neovim."
+	fi
+
+	if [ "${set_vim_theme:-true}" = "true" ]; then
+		cp "$VIM_DARK_TEMPLATE" "$VIM_THEME_FILE"
+		echo "Applied dark theme to Vim."
+	fi
+
+	if [ "${set_kitty_theme:-true}" = "true" ]; then
+		cp "$KITTY_DARK_TEMPLATE" "$KITTY_THEME_FILE"
+		echo "Applied dark theme to Kitty."
+	fi
+
+	echo "Setting dark theme..."
+	sed -i "s/^current_theme=.*/current_theme=dark/" "$THEME_CONFIG_FILE"
+	echo "Switched to dark theme."
+}
+
+set_light_theme() {
+	if [ "${set_nvim_theme:-true}" = "true" ]; then
+		cp "$NVIM_LIGHT_TEMPLATE" "$NVIM_THEME_FILE"
+		echo "Applied light theme to Neovim."
+	fi
+
+	if [ "${set_vim_theme:-true}" = "true" ]; then
+		cp "$VIM_LIGHT_TEMPLATE" "$VIM_THEME_FILE"
+		echo "Applied light theme to Vim."
+	fi
+
+	if [ "${set_kitty_theme:-true}" = "true" ]; then
+		cp "$KITTY_LIGHT_TEMPLATE" "$KITTY_THEME_FILE"
+		echo "Applied light theme to Kitty."
+	fi
+
+	echo "Setting light theme..."
+	sed -i "s/^current_theme=.*/current_theme=light/" "$THEME_CONFIG_FILE"
+	echo "Switched to light theme."
+}
+
+toggle_theme() {
+	check_user_config
+	load_config
+
+	# Proceed to toggle the theme if all checks passed
+	if [ "$current_theme" = "dark" ]; then
+		set_light_theme
+	else
+		set_dark_theme
+	fi
+}
+
+set_theme() {
+	check_user_config
+	local theme="$1"
+	local program="$2"
+	local colorscheme="$3"
+
+	case "$program" in
+	--vim)
+		template_file="$CONFIG_DIR/templates/vim-$theme"
+		output_file="$VIM_THEME_FILE"
+		sed -i "s/^colorscheme .*/colorscheme $colorscheme/" "$template_file"
+		;;
+	--nvim)
+		template_file="$CONFIG_DIR/templates/nvim-$theme"
+		output_file="$NVIM_THEME_FILE"
+		sed -i "s|^vim\.cmd\.colorscheme(.*)|vim.cmd.colorscheme(\"$colorscheme\")|" "$template_file"
+		;;
+	--kitty)
+		template_file="$CONFIG_DIR/templates/kitty-$theme"
+		output_file="$KITTY_THEME_FILE"
+		sed -i "s|^include ./themes/.*|include ./themes/$colorscheme.conf|" "$template_file"
+		;;
+	*)
+		echo "Error: Unsupported program '$program'. Use '--vim', '--nvim', or '--kitty'."
+		exit 1
+		;;
+	esac
+
+	cp "$template_file" "$output_file"
+	echo "Applied $theme theme with colorscheme '$colorscheme' to $program."
+
+	sed -i "s/^current_theme=.*/current_theme=$theme/" "$THEME_CONFIG_FILE"
+}
+
+show_version() {
+	echo "Theme Switcher Script, Version $VERSION"
+}
+
+set_opacity() {
+	if [[ ! "$1" =~ ^[0-1](\.[0-9]{1,2})?$ ]] || (($(echo "$1 < 0.00" | bc -l) || $(echo "$1 > 1.00" | bc -l))); then
+		echo "Error: Opacity must be a number between 0.00 and 1.00"
+		return 1
+	fi
+
+	if [[ "$2" != "dark" && "$2" != "light" ]]; then
+		echo "Error: Theme must be either 'dark' or 'light'"
+		return 1
+	fi
+
+	KITTY_TEMPLATE_FILE="$TEMPLATE_DIR/kitty-$2"
+
+	local opacity=$1
+	local theme=$2
+	sed -i "s/^background_opacity .*/background_opacity $opacity/" "$KITTY_TEMPLATE_FILE"
+	echo "Setting opacity of $opacity to $KITTY_TEMPLATE_FILE"
+}
+
+reload_theme() {
+	check_user_config
+	load_config
+	if [ "$current_theme" = "dark" ]; then
+		set_dark_theme
+	else
+		set_light_theme
+	fi
+}

@@ -1,0 +1,30 @@
+# Version number
+readonly VERSION="1.1.6"
+
+readonly ROOT_CONFIG_DIR="$HOME/.config"
+readonly CONFIG_DIR="$HOME/.config/theme-switch"
+readonly THEME_CONFIG_FILE="$CONFIG_DIR/theme.conf"
+readonly TEMPLATE_DIR="$CONFIG_DIR/templates"
+
+readonly NVIM_CONFIG_DIR=$ROOT_CONFIG_DIR/nvim
+readonly VIM_CONFIG_DIR=$HOME/.vim
+readonly KITTY_CONFIG_DIR=$ROOT_CONFIG_DIR/kitty
+
+NVIM_THEME_FILE="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+VIM_THEME_FILE="$HOME/.vim/theme.vim"
+KITTY_THEME_FILE="$ROOT_CONFIG_DIR/kitty/theme.conf"
+
+readonly NVIM_DARK_TEMPLATE="$TEMPLATE_DIR/nvim-dark"
+readonly NVIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/nvim-light"
+readonly VIM_DARK_TEMPLATE="$TEMPLATE_DIR/vim-dark"
+readonly VIM_LIGHT_TEMPLATE="$TEMPLATE_DIR/vim-light"
+readonly KITTY_DARK_TEMPLATE="$TEMPLATE_DIR/kitty-dark"
+readonly KITTY_LIGHT_TEMPLATE="$TEMPLATE_DIR/kitty-light"
+
+readonly VIM_THEME_DIR=$CONFIG_DIR/vim-themes
+readonly KITTY_THEME_DIR=$CONFIG_DIR/kitty-themes
+
+readonly ISSUES_FILE="/etc/theme-switch/issues.txt"
+
+readonly REPO_LIST="/etc/theme-switch/repo-list.json"
+readonly TEMP_DIR=$(mktemp -d)
