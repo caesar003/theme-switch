@@ -199,7 +199,7 @@ select_theme() {
 }
 
 initialize_config() {
-	mkdir -p $TEMPLATE_DIR
+	mkdir -p "$TEMPLATE_DIR"
 	generate_config
 
 	echo ""

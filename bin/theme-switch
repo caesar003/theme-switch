@@ -2,7 +2,7 @@
 
 source /usr/lib/theme-switch/constants
 source /usr/lib/theme-switch/init
-source /usr/lib/theme-switch/theme-switch
+source /usr/lib/theme-switch/core
 
 case "$1" in
 -v | --version)
@@ -28,15 +28,6 @@ case "$1" in
 	reload_theme
 	;;
 *)
-	echo "Usage: $0 [option]"
-	echo "Options:"
-	echo "  -v, --version         Show the version number"
-	echo "  -t, --toggle          Toggle between dark and light themes"
-	echo "  -r, --reload          Reload the config after template changes"
-	echo "  -s, --set <theme>     Set a specific theme and colorscheme for a program"
-	echo "                        Example: $0 -s dark --nvim gruvbox"
-	echo "  -o, --opacity <theme> Set Kitty Opacity for specific theme"
-	echo "                        Example: $0 -o dark 0.90"
-	echo "  -d, --detail          Show current theme details"
+  print_help
 	;;
 esac
