@@ -16,7 +16,7 @@ case "$1" in
 		echo "Usage: $0 -s <light|dark> --<vim|nvim|kitty> <colorscheme>"
 		exit 1
 	fi
-	set_theme "$2" "$3" "$4"
+	set_template "$2" "$3" "$4"
 	;;
 -d | --detail)
 	show_details

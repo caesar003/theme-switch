@@ -1,5 +1,5 @@
 # Version number
-readonly VERSION="1.2.0"
+readonly VERSION="1.2.1"
 
 readonly ROOT_CONFIG_DIR="$HOME/.config"
 readonly CONFIG_DIR="$HOME/.config/theme-switch"

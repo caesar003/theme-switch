@@ -1,5 +1,5 @@
 check_user_config() {
-  # TODO: add more handlers here
+	# TODO: add more handlers here
 	if [ ! -d "$CONFIG_DIR" ]; then
 		echo "Configuration directory '$CONFIG_DIR' not found."
 		echo "Would you like to create it now? (Y/n): "
@@ -32,9 +32,13 @@ load_config() {
 
 show_details() {
 	load_config
-	local vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME_FILE" | head -n 1)
-	local nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME_FILE" | head -n 1)
-	local kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME_FILE" | head -n 1)
+	local vim_colorscheme
+	local nvim_colorscheme
+	local kitty_theme
+
+	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' "$VIM_THEME_FILE" | head -n 1)
+	nvim_colorscheme=$(grep -oP 'vim\.cmd.colorscheme\("\K[^"]+' "$NVIM_THEME_FILE" | head -n 1)
+	kitty_theme=$(grep -oP 'include ./themes/\K[^.]*' "$KITTY_THEME_FILE" | head -n 1)
 
 	echo "Current theme: $current_theme"
 	echo "Vim colorscheme: ${vim_colorscheme:-Not set}"
@@ -42,50 +46,44 @@ show_details() {
 	echo "Kitty theme: ${kitty_theme:-Not set}"
 }
 
-set_dark_theme() {
+set_theme() {
+	local theme_type="$1"
+
+	if [ "$theme_type" = "dark" ]; then
+		NVIM_TEMPLATE="$NVIM_DARK_TEMPLATE"
+		VIM_TEMPLATE="$VIM_DARK_TEMPLATE"
+		KITTY_TEMPLATE="$KITTY_DARK_TEMPLATE"
+	else
+		NVIM_TEMPLATE="$NVIM_LIGHT_TEMPLATE"
+		VIM_TEMPLATE="$VIM_LIGHT_TEMPLATE"
+		KITTY_TEMPLATE="$KITTY_LIGHT_TEMPLATE"
+	fi
+
 	if [ "${set_nvim_theme:-true}" = "true" ]; then
-		cp "$NVIM_DARK_TEMPLATE" "$NVIM_THEME_FILE"
-		echo "Applied dark theme to Neovim."
+		cp "$NVIM_TEMPLATE" "$NVIM_THEME_FILE"
+		echo "Applied $theme_type theme to Neovim."
 	fi
 
 	if [ "${set_vim_theme:-true}" = "true" ]; then
-		cp "$VIM_DARK_TEMPLATE" "$VIM_THEME_FILE"
-		echo "Applied dark theme to Vim."
+		cp "$VIM_TEMPLATE" "$VIM_THEME_FILE"
+		echo "Applied $theme_type theme to Vim."
 	fi
 
 	if [ "${set_kitty_theme:-true}" = "true" ]; then
-		cp "$KITTY_DARK_TEMPLATE" "$KITTY_THEME_FILE"
-		echo "Applied dark theme to Kitty."
+		cp "$KITTY_TEMPLATE" "$KITTY_THEME_FILE"
+		echo "Applied $theme_type theme to Kitty."
 	fi
 
-	echo "Setting dark theme..."
-	sed -i "s/^current_theme=.*/current_theme=dark/" "$THEME_CONFIG_FILE"
-  kitty @ load-config
-	echo "Switched to dark theme."
+	sed -i "s/^current_theme=.*/current_theme=$theme_type/" "$THEME_CONFIG_FILE"
+
+	# Attempt to reload Kitty's configuration
+	if ! kitty @ load-config; then
+		echo "Warning: Failed to reload Kitty configuration. Ensure Kitty is running."
+	fi
+
+	echo "Switched to $theme_type theme."
 }
 
-set_light_theme() {
-	if [ "${set_nvim_theme:-true}" = "true" ]; then
-		cp "$NVIM_LIGHT_TEMPLATE" "$NVIM_THEME_FILE"
-		echo "Applied light theme to Neovim."
-	fi
-
-	if [ "${set_vim_theme:-true}" = "true" ]; then
-		cp "$VIM_LIGHT_TEMPLATE" "$VIM_THEME_FILE"
-		echo "Applied light theme to Vim."
-	fi
-
-	if [ "${set_kitty_theme:-true}" = "true" ]; then
-		cp "$KITTY_LIGHT_TEMPLATE" "$KITTY_THEME_FILE"
-		echo "Applied light theme to Kitty."
-	fi
-
-
-	echo "Setting light theme..."
-	sed -i "s/^current_theme=.*/current_theme=light/" "$THEME_CONFIG_FILE"
-  kitty @ load-config
-	echo "Switched to light theme."
-}
 
 toggle_theme() {
 	check_user_config
@@ -93,13 +91,25 @@ toggle_theme() {
 
 	# Proceed to toggle the theme if all checks passed
 	if [ "$current_theme" = "dark" ]; then
-		set_light_theme
+		set_theme "light"
 	else
-		set_dark_theme
+		set_theme "dark"
 	fi
 }
 
-set_theme() {
+reload_theme() {
+	check_user_config
+	load_config
+
+	# Proceed to toggle the theme if all checks passed
+	if [ "$current_theme" = "dark" ]; then
+		set_theme "dark"
+	else
+		set_theme "light"
+	fi
+}
+
+set_template() {
 	check_user_config
 	local theme="$1"
 	local program="$2"
@@ -128,7 +138,7 @@ set_theme() {
 	esac
 
 	cp "$template_file" "$output_file"
-	echo "Applied $theme theme with colorscheme '$colorscheme' to $program."
+	echo "Applied $theme theme with colorscheme '$colorscheme' to $program template."
 
 	sed -i "s/^current_theme=.*/current_theme=$theme/" "$THEME_CONFIG_FILE"
 }
@@ -156,17 +166,7 @@ set_opacity() {
 	echo "Setting opacity of $opacity to $KITTY_TEMPLATE_FILE"
 }
 
-reload_theme() {
-	check_user_config
-	load_config
-	if [ "$current_theme" = "dark" ]; then
-		set_dark_theme
-	else
-		set_light_theme
-	fi
-}
-
-print_help(){
+print_help() {
 	echo "Usage: $0 [option]"
 	echo "Options:"
 	echo "  -v, --version                              Show the version number"
