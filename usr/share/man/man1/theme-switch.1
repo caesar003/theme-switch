@@ -1,4 +1,4 @@
-.TH THEME-SWITCH 1 "November 2024" "Version 1.2.1" "User Commands"
+.TH THEME-SWITCH 1 "November 2024" "Version 1.2.2" "User Commands"
 .SH NAME
 theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim, with opacity support
 
@@ -30,14 +30,14 @@ Toggles the current theme from dark to light or vice versa, updating the relevan
 .I theme.conf.
 
 .TP
-.BR -s ", " --set " " <mode> [--vim | --nvim | --kitty] <colorscheme>
+.BR -s ", " --set " " <mode> [vim | nvim | kitty] <colorscheme>
 Sets the specified application’s theme to a particular colorscheme in the chosen mode (dark or light). 
 .IR <mode>
 should be either "dark" or "light." Specify the application with 
-.IR --vim ,
-.IR --nvim ,
+.IR vim ,
+.IR nvim ,
 or 
-.IR --kitty ,
+.IR kitty ,
 followed by the 
 .IR <colorscheme>
 name.

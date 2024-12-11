@@ -1,31 +1,32 @@
 #!/bin/bash
 
+# /usr/bin/theme-switch
 source /usr/lib/theme-switch/constants
 source /usr/lib/theme-switch/init
 source /usr/lib/theme-switch/core
 
 case "$1" in
 -v | --version)
-	show_version
+	showVersion
 	;;
 -t | --toggle)
-	toggle_theme
+	toggleTheme
 	;;
 -s | --set)
 	if [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
 		echo "Usage: $0 -s <light|dark> --<vim|nvim|kitty> <colorscheme>"
 		exit 1
 	fi
-	set_template "$2" "$3" "$4"
+	setTemplate "$2" "$3" "$4"
 	;;
 -d | --detail)
-	show_details
+	showDetails
 	;;
 -o | --opacity)
-	set_opacity "$2" "$3"
+	setOpacity "$2" "$3"
 	;;
 -r | --reload)
-	reload_theme
+	reloadTheme
 	;;
 *)
   print_help

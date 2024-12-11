@@ -1,5 +1,9 @@
+#!/bin/bash
 # Version number
-readonly VERSION="1.2.1"
+
+# /usr/lib/theme-switch/constants
+
+readonly VERSION="1.2.2"
 
 readonly ROOT_CONFIG_DIR="$HOME/.config"
 readonly CONFIG_DIR="$HOME/.config/theme-switch"
@@ -28,3 +32,4 @@ readonly ISSUES_FILE="/etc/theme-switch/issues.txt"
 
 readonly REPO_LIST="/etc/theme-switch/repo-list.json"
 readonly TEMP_DIR=$(mktemp -d)
+

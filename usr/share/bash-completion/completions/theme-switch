@@ -1,3 +1,4 @@
+#!/bin/bash
 # Completion script for theme-switch.sh
 
 _theme_switch_completion() {
@@ -7,7 +8,7 @@ _theme_switch_completion() {
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
 	opts="-v --version -t --toggle -s --set -d --detail -o --opacity"  
-	program_opts="--vim --nvim --kitty"
+	program_opts="vim nvim kitty"
 
 	# Load theme files for vim/nvim and kitty
 	vim_themes=$(basename -s .vim ~/.config/theme-switch/vim-themes/*.vim 2>/dev/null)
@@ -25,12 +26,12 @@ _theme_switch_completion() {
 			COMPREPLY=($(compgen -W "dark light" -- "$cur"))
 			return 0
 			;;
-		--vim|--nvim)
+		vim|nvim)
 			# Provide Vim/Neovim colorschemes
 			COMPREPLY=($(compgen -W "$vim_themes" -- "$cur"))
 			return 0
 			;;
-		--kitty)
+		kitty)
 			# Provide Kitty themes
 			COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
 			return 0
