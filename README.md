@@ -67,10 +67,10 @@ For Debian-based systems, install `theme-switch` by downloading the `.deb` packa
     theme-switch -d
     ```
 
--   **`-s` or `--set <mode> [--vim | --nvim | --kitty] <colorscheme>`**: Sets a specified application’s theme in a particular mode (dark or light) with the chosen colorscheme.
+-   **`-s` or `--set <mode> [vim | nvim | kitty] <colorscheme>`**: Sets a specified application’s theme in a particular mode (dark or light) with the chosen colorscheme.
 
     ```bash
-    theme-switch -s dark --nvim gruvbox
+    theme-switch -s dark nvim gruvbox
     ```
 
 -   **`-o` or `--opacity <mode>`**: Sets kitty transparency for light or dark theme.
@@ -141,10 +141,10 @@ theme-switch -v
 theme-switch -d
 
 # Set the Neovim theme to 'gruvbox' in dark mode:
-theme-switch -s dark --nvim gruvbox
+theme-switch -s dark nvim gruvbox
 
 # Set the Kitty theme to 'tokyonight' in light mode:
-theme-switch -s light --kitty tokyonight
+theme-switch -s light kitty tokyonight
 
 # Set Kitty opacity of 85% for dark theme
 theme-switch -o 0.85 dark

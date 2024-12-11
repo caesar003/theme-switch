@@ -136,7 +136,7 @@ setTemplate() {
 		sed -i "s|^include ./themes/.*|include ./themes/$colorscheme.conf|" "$template_file"
 		;;
 	*)
-		echo "Error: Unsupported program '$program'. Use '--vim', '--nvim', or '--kitty'."
+		echo "Error: Unsupported program '$program'. Use 'vim', 'nvim', or 'kitty'."
 		exit 1
 		;;
 	esac
@@ -177,7 +177,7 @@ printHelp() {
 	echo "  -t, --toggle                               Toggle between dark and light themes"
 	echo "  -r, --reload                               Reload the config after template changes"
 	echo "  -s, --set <theme> <program> <colorscheme>  Set a specific theme and colorscheme for a program"
-	echo "                                             Example: $0 -s dark --nvim gruvbox"
+	echo "                                             Example: $0 -s dark nvim gruvbox"
 	echo "  -o, --opacity <opacity> <theme>            Set Kitty Opacity for specific theme"
 	echo "                                             Example: $0 -o 0.90 dark"
 	echo "  -d, --detail                               Show current theme details"

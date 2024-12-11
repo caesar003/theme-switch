@@ -29,6 +29,6 @@ case "$1" in
 	reloadTheme
 	;;
 *)
-  print_help
+  printHelp
 	;;
 esac
