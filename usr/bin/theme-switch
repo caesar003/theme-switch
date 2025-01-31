@@ -5,10 +5,6 @@ source /usr/lib/theme-switch/constants
 source /usr/lib/theme-switch/init
 source /usr/lib/theme-switch/core
 
-# source ../lib/theme-switch/constants
-# source ../lib/theme-switch/init
-# source ../lib/theme-switch/core
-
 case "$1" in
 -v | --version)
 	showVersion
