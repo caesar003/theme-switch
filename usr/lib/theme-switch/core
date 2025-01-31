@@ -53,6 +53,7 @@ showDetails() {
 
 setTheme() {
 	local theme_type="$1"
+  local action="$2"
 
 	if [ "$theme_type" = "dark" ]; then
 		NVIM_TEMPLATE="$NVIM_DARK_TEMPLATE"
@@ -86,7 +87,7 @@ setTheme() {
 		echo "Warning: Failed to reload Kitty configuration. Ensure Kitty is running."
 	fi
 
-	echo "Switched to $theme_type theme."
+	echo "$action $theme_type theme."
 }
 
 toggleTheme() {
@@ -95,9 +96,9 @@ toggleTheme() {
 
 	# Proceed to toggle the theme if all checks passed
 	if [ "$current_theme" = "dark" ]; then
-		setTheme "light"
+		setTheme "light" "Switched to" 
 	else
-		setTheme "dark"
+		setTheme "dark" "Switched to"
 	fi
 }
 
@@ -107,9 +108,9 @@ reloadTheme() {
 
 	# Proceed to toggle the theme if all checks passed
 	if [ "$current_theme" = "dark" ]; then
-		setTheme "dark"
+		setTheme "dark" "Reloaded"
 	else
-		setTheme "light"
+		setTheme "light" "Reloaded"
 	fi
 }
 

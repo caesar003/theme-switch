@@ -7,7 +7,7 @@ _theme_switch_completion() {
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="-v --version -t --toggle -s --set -d --detail -o --opacity"  
+	opts="-v --version -t --toggle -r --reload -s --set -d --detail -o --opacity"  
 	program_opts="vim nvim kitty"
 
 	# Load theme files for vim/nvim and kitty

@@ -1,4 +1,4 @@
-.TH THEME-SWITCH 1 "November 2024" "Version 1.2.3" "User Commands"
+.TH THEME-SWITCH 1 "January 2025" "Version 1.3.0" "User Commands"
 .SH NAME
 theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim, with opacity support
 
@@ -8,6 +8,8 @@ theme-switch \- toggle between light and dark themes for Neovim, Kitty, and Vim,
 .RB [ --version ]
 .RB [ -t ]
 .RB [ --toggle ]
+.RB [ -r ]
+.RB [ --reload ]
 .RB [ -s ]
 .RB [ --set ]
 .RB [ -d ]
@@ -28,6 +30,10 @@ Displays the version number of the script.
 .BR -t ", " --toggle
 Toggles the current theme from dark to light or vice versa, updating the relevant configuration files based on settings in
 .I theme.conf.
+
+.TP
+.BR -r ", " --reload
+Reloads the current active theme.
 
 .TP
 .BR -s ", " --set " " <mode> [vim | nvim | kitty] <colorscheme>
@@ -57,7 +63,7 @@ which contains the following files:
 .RS
 .IP - 2
 .I theme.conf
-: Stores the current theme ("dark" or "light") and configuration options for each application, including opacity settings.
+: Stores the current theme ("dark" or "light") and configuration options for each application, including kitty opacity settings.
 .IP - 2
 .I nvim_theme
 : Path to the Neovim theme configuration file, customizable in
@@ -109,6 +115,11 @@ Paths to the respective theme configuration files for Neovim, Vim, and Kitty. Al
 Toggle the current theme:
 .B
 theme-switch -t
+
+.TP
+Reload the current theme:
+.B
+theme-switch -r
 
 .TP
 Check the version:

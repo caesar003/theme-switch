@@ -2,7 +2,7 @@
 # /usr/lib/theme-switch/init
 
 declare -A vim_dark_themes
-vim_dark_themes=(
+vim_dark_themes=( 
 	["1"]="gruvbox"
 	["2"]="tokyonight"
 	["3"]="rosepine"
@@ -11,7 +11,7 @@ vim_dark_themes=(
 )
 
 declare -A vim_dark_themes_display
-vim_dark_themes_display=(
+vim_dark_themes_display=( 
 	["1"]="Gruvbox (default)"
 	["2"]="Tokyonight"
 	["3"]="Rosé Pine"
@@ -20,7 +20,7 @@ vim_dark_themes_display=(
 )
 
 declare -A vim_light_themes
-vim_light_themes=(
+vim_light_themes=( 
 	["1"]="paper"
 	["2"]="tokyonight"
 	["3"]="rosepine"
@@ -29,7 +29,7 @@ vim_light_themes=(
 )
 
 declare -A vim_light_themes_display
-vim_light_themes_display=(
+vim_light_themes_display=( 
 	["1"]="Paper (default)"
 	["2"]="Rosé Pine"
 	["3"]="Catppuccin"
@@ -38,7 +38,7 @@ vim_light_themes_display=(
 )
 
 declare -A kitty_dark_themes
-kitty_dark_themes=(
+kitty_dark_themes=( 
 	["1"]="adwaita_dark"
 	["2"]="Atom"
 	["3"]="Catppuccin-Mocha"
@@ -56,7 +56,7 @@ kitty_light_themes=(
 )
 
 declare -A kitty_dark_themes_display
-kitty_dark_themes_display=(
+kitty_dark_themes_display=( 
 	["1"]="Adwaita Dark (default)"
 	["2"]="Atom"
 	["3"]="Catppuccin Mocha"
@@ -101,9 +101,11 @@ clone_theme() {
 	# Read each entry in repo-list.json
 	jq -c '.[]' "$REPO_LIST" | while read -r entry; do
 		# Parse JSON values
-		local id=$(echo "$entry" | jq -r '.id')
-		local theme=$(echo "$entry" | jq -r '.theme')
-		local repo=$(echo "$entry" | jq -r '.repo')
+		local id theme repo
+
+		id=$(echo "$entry" | jq -r '.id')
+		theme=$(echo "$entry" | jq -r '.theme')
+		repo=$(echo "$entry" | jq -r '.repo')
 
 		# Clone and copy themes
 		clone_repo "$id" "$theme" "$repo"
@@ -139,34 +141,34 @@ clone_theme() {
 
 generate_config() {
 	clone_theme
-	read -p "Your default theme? light/dark (default dark): " user_theme
+	read -pr "Your default theme? light/dark (default dark): " user_theme
 	local selected_theme="${user_theme:-dark}"
 
-	read -p "Are you using Vim? y/n (default yes): " use_vim
+	read -pr "Are you using Vim? y/n (default yes): " use_vim
 	local set_vim_theme=true
 	if [[ "$use_vim" =~ ^(n|N) ]]; then
 		set_vim_theme=false
 	fi
 
-	read -p "Are you using Kitty? y/n (default yes): " use_kitty
+	read -pr "Are you using Kitty? y/n (default yes): " use_kitty
 	local set_kitty_theme=true
 	if [[ "$use_kitty" =~ ^(n|N) ]]; then
 		set_kitty_theme=false
 	fi
 
-	read -p "Are you using Neovim? y/n (default yes): " use_nvim
+	read -pr "Are you using Neovim? y/n (default yes): " use_nvim
 	local set_nvim_theme=true
 	if [[ "$use_nvim" =~ ^(n|N) ]]; then
 		set_nvim_theme=false
 	fi
 
-	read -p "Path to Neovim theme file (default $NVIM_THEME_FILE): " nvim_theme
+	read -pr "Path to Neovim theme file (default $NVIM_THEME_FILE): " nvim_theme
 	local nvim_theme="${nvim_theme:-$NVIM_THEME_FILE}"
 
-	read -p "Path to Vim theme file (default $VIM_THEME_FILE): " vim_theme
+	read -pr "Path to Vim theme file (default $VIM_THEME_FILE): " vim_theme
 	local vim_theme="${vim_theme:-$VIM_THEME_FILE}"
 
-	read -p "Path to Kitty theme file (default $KITTY_THEME_FILE): " kitty_theme
+	read -pr "Path to Kitty theme file (default $KITTY_THEME_FILE): " kitty_theme
 	local kitty_theme="${kitty_theme:-$KITTY_THEME_FILE}"
 
 	cat <<EOL >"$THEME_CONFIG_FILE"
@@ -195,7 +197,7 @@ select_theme() {
 	local -n themes=$1
 	local default_choice=$2
 
-	read -p "Pick the number or press enter to accept default ($default_choice): " local choice
+	read -rp "Pick the number or press enter to accept default ($default_choice): " choice
 	choice="${choice:-$default_choice}"
 
 	echo "${themes[$choice]}"
@@ -205,20 +207,22 @@ initialize_config() {
 	mkdir -p "$TEMPLATE_DIR"
 	generate_config
 
+	local kitty_dark_theme_name kitty_light_theme_name vim_dark_theme_name
+
 	echo ""
 	echo "Choose Kitty Dark Theme (you can change this later):"
 	show_prompt kitty_dark_themes_display
-	local kitty_dark_theme_name=$(select_theme kitty_dark_themes "1")
+	kitty_dark_theme_name=$(select_theme kitty_dark_themes "1")
 
 	echo ""
 	echo "Choose Kitty Light Theme (you can change this later):"
 	show_prompt kitty_light_themes_display
-	local kitty_light_theme_name=$(select_theme kitty_light_themes "1")
+	kitty_light_theme_name=$(select_theme kitty_light_themes "1")
 
 	echo ""
 	echo "Choose Vim Dark Theme (you can change this later):"
 	show_prompt vim_dark_themes_display
-	local vim_dark_theme_name=$(select_theme vim_dark_themes "1")
+	vim_dark_theme_name=$(select_theme vim_dark_themes "1") # they are actually being used here,
 
 	echo ""
 	echo "Choose Vim Light Theme (you can change this later):"
