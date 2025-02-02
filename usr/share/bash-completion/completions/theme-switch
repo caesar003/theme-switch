@@ -41,6 +41,7 @@ _theme_switch_completion() {
 	fi
 
 	return 0
+
 }
 
 # Register the completion function for theme-switch
