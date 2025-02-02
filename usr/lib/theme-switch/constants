@@ -1,9 +1,8 @@
 #!/bin/bash
-# Version number
 
 # /usr/lib/theme-switch/constants
 
-readonly VERSION="1.2.3"
+readonly VERSION="1.4.0"
 
 readonly ROOT_CONFIG_DIR="$HOME/.config"
 readonly CONFIG_DIR="$HOME/.config/theme-switch"
@@ -14,7 +13,8 @@ readonly NVIM_CONFIG_DIR=$ROOT_CONFIG_DIR/nvim
 readonly VIM_CONFIG_DIR=$HOME/.vim
 readonly KITTY_CONFIG_DIR=$ROOT_CONFIG_DIR/kitty
 
-NVIM_THEME_FILE="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+# NVIM_THEME_FILE="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+NVIM_THEME_FILE="$ROOT_CONFIG_DIR/nvim/lua/theme.lua"
 VIM_THEME_FILE="$HOME/.vim/theme.vim"
 KITTY_THEME_FILE="$ROOT_CONFIG_DIR/kitty/theme.conf"
 
@@ -32,4 +32,3 @@ readonly ISSUES_FILE="/etc/theme-switch/issues.txt"
 
 readonly REPO_LIST="/etc/theme-switch/repo-list.json"
 readonly TEMP_DIR=$(mktemp -d)
-

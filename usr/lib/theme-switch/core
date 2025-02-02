@@ -4,6 +4,9 @@
 
 checkUserConfig() {
 	if [ ! -d "$CONFIG_DIR" ]; then
+		echo "--------------------------------------------------------------------------------"
+		echo "Checking user config..."
+		echo "--------------------------------------------------------------------------------"
 		echo "Configuration directory '$CONFIG_DIR' not found."
 		echo "Would you like to create it now? (Y/n): "
 		read -r create_config
@@ -172,14 +175,15 @@ setOpacity() {
 }
 
 printHelp() {
-	echo "Usage: $0 [option]"
+  script_name=$(basename "$0")
+  echo "Usage: $script_name [option]"
 	echo "Options:"
 	echo "  -v, --version                              Show the version number"
 	echo "  -t, --toggle                               Toggle between dark and light themes"
 	echo "  -r, --reload                               Reload the config after template changes"
 	echo "  -s, --set <theme> <program> <colorscheme>  Set a specific theme and colorscheme for a program"
-	echo "                                             Example: $0 -s dark nvim gruvbox"
+	echo "                                             Example: $script_name -s dark nvim gruvbox"
 	echo "  -o, --opacity <opacity> <theme>            Set Kitty Opacity for specific theme"
-	echo "                                             Example: $0 -o 0.90 dark"
+	echo "                                             Example: $script_name -o 0.90 dark"
 	echo "  -d, --detail                               Show current theme details"
 }
