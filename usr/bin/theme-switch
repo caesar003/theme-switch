@@ -1,9 +1,13 @@
 #!/bin/bash
 # /usr/bin/theme-switch
 
-source /usr/lib/theme-switch/constants
-source /usr/lib/theme-switch/init
-source /usr/lib/theme-switch/core
+# source /usr/lib/theme-switch/constants
+# source /usr/lib/theme-switch/init
+# source /usr/lib/theme-switch/core
+
+source ../lib/theme-switch/constants
+source ../lib/theme-switch/init
+source ../lib/theme-switch/core
 
 case "$1" in
 -v | --version)
@@ -21,6 +25,14 @@ case "$1" in
 	;;
 -d | --detail)
 	showDetails
+	;;
+# NOTE: just added the following
+-l | --list-themes)
+	if [ -z "$2" ]; then
+		echo "Usage: $0 -l <vim|nvim|kitty>"
+		exit 1
+	fi
+	listThemes "$2"
 	;;
 -o | --opacity)
 	setOpacity "$2" "$3"

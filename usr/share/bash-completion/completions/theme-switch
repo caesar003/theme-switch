@@ -7,7 +7,7 @@ _theme_switch_completion() {
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
 	prev="${COMP_WORDS[COMP_CWORD - 1]}"
-	opts="-v --version -t --toggle -r --reload -s --set -d --detail -o --opacity"  
+	opts="-v --version -t --toggle -r --reload -s --set -d --detail -o --opacity -l --list-themes"
 	program_opts="vim nvim kitty"
 
 	# Load theme files for vim/nvim and kitty
@@ -15,39 +15,44 @@ _theme_switch_completion() {
 	kitty_themes=$(basename -s .conf ~/.config/theme-switch/kitty-themes/*.conf 2>/dev/null)
 
 	# Load opacity options (if any) for Kitty, Neovim, and Vim
-  opacity_opts="0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0"
+	opacity_opts="0.6 0.65 0.7 0.75 0.8 0.85 0.9 0.95 1.0"
 
 	case "$prev" in
-		theme-switch.sh)
-			COMPREPLY=($(compgen -W "$opts" -- "$cur"))
-			return 0
-			;;
-		-s | --set)
-			COMPREPLY=($(compgen -W "dark light" -- "$cur"))
-			return 0
-			;;
-		vim|nvim)
-			# Provide Vim/Neovim colorschemes
-			COMPREPLY=($(compgen -W "$vim_themes" -- "$cur"))
-			return 0
-			;;
-		kitty)
-			# Provide Kitty themes
-			COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
-			return 0
-			;;
-		-o | --opacity)
-			# Suggest opacity values
-			COMPREPLY=($(compgen -W "$opacity_opts" -- "$cur"))
-			return 0
-			;;
-		*)
-			if [[ "$prev" == "-s" || "$prev" == "--set" ]]; then
-				# Suggest program options after -s or --set
-				COMPREPLY=($(compgen -W "$program_opts" -- "$cur"))
-			fi
-			return 0
-			;;
+	theme-switch.sh)
+		COMPREPLY=($(compgen -W "$opts" -- "$cur"))
+		return 0
+		;;
+	-s | --set)
+		COMPREPLY=($(compgen -W "dark light" -- "$cur"))
+		return 0
+		;;
+	vim | nvim)
+		# Provide Vim/Neovim colorschemes
+		COMPREPLY=($(compgen -W "$vim_themes" -- "$cur"))
+		return 0
+		;;
+	kitty)
+		# Provide Kitty themes
+		COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
+		return 0
+		;;
+	-o | --opacity)
+		# Suggest opacity values
+		COMPREPLY=($(compgen -W "$opacity_opts" -- "$cur"))
+		return 0
+		;;
+	-l | --list-themes)
+		# Provide program options for -l (vim, nvim, kitty)
+		COMPREPLY=($(compgen -W "$program_opts" -- "$cur"))
+		return 0
+		;;
+	*)
+		if [[ "$prev" == "-s" || "$prev" == "--set" ]]; then
+			# Suggest program options after -s or --set
+			COMPREPLY=($(compgen -W "$program_opts" -- "$cur"))
+		fi
+		return 0
+		;;
 	esac
 }
 
