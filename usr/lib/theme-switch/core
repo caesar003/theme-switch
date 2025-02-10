@@ -157,11 +157,13 @@ showVersion() {
 
 setOpacity() {
 	if [[ ! "$1" =~ ^[0-1](\.[0-9]{1,2})?$ ]] || (($(echo "$1 < 0.00" | bc -l) || $(echo "$1 > 1.00" | bc -l))); then
+    # error message
 		echo "Error: Opacity must be a number between 0.00 and 1.00"
 		return 1
 	fi
 
 	if [[ "$2" != "dark" && "$2" != "light" ]]; then
+    # error message
 		echo "Error: Theme must be either 'dark' or 'light'"
 		return 1
 	fi
@@ -171,6 +173,7 @@ setOpacity() {
 	local opacity=$1
 	local theme=$2
 	sed -i "s/^background_opacity .*/background_opacity $opacity/" "$KITTY_TEMPLATE_FILE"
+  # success message
 	echo "Setting opacity of $opacity to $KITTY_TEMPLATE_FILE"
 }
 

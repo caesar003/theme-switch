@@ -1,34 +1,251 @@
 #!/bin/bash
-# /usr/bin/theme-switch
 
-source /usr/lib/theme-switch/constants
-source /usr/lib/theme-switch/init
-source /usr/lib/theme-switch/core
+RED="\e[31m"
+GREEN="\e[32m"
+YELLOW="\e[33m"
+# BLUE="\e[34m"
+# BLUE="\[\033[0;34m\]"    # Blue
+# MAGENTA="\[\033[0;35m\]" # Magenta
+# CYAN="\[\033[0;36m\]"    # Cyan
+# WHITE="\[\033[0;37m\]"   # White
+RESET="\e[0m"
+
+#==============================================================================
+# CONSTANTS
+#==============================================================================
+readonly VERSION="1.0.0"
+readonly ROOT_CONFIG_DIR="$HOME/.config"
+readonly THEME_SWITCH_CONFIG_DIR="$ROOT_CONFIG_DIR/theme-switch"
+readonly USER_CONFIG_FILE="$HOME/.config/theme-switch/theme.conf"
+
+readonly THEME_SWITCH_TEMP_DIR="$THEME_SWITCH_CONFIG_DIR/templates"
+
+readonly VIM_THEME_DIR="$THEME_SWITCH_CONFIG_DIR/vim-themes"
+readonly KITTY_THEME_DIR="$THEME_SWITCH_CONFIG_DIR/kitty-themes"
+
+# TEMPLATE FILES
+readonly KITTY_DARK_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/kitty-dark"
+readonly KITTY_LIGHT_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/kitty-dark"
+readonly NVIM_DARK_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/nvim-dark"
+readonly NVIM_LIGHT_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/nvim-light"
+readonly VIM_DARK_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/vim-dark"
+readonly VIM_LIGHT_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/vim-light"
+
+
+VIM_THEME_FILE_PATH="$HOME/.vim/theme.vim"
+KITTY_THEME_FILE_PATH="$ROOT_CONFIG_DIR/kitty/theme.conf"
+NVIM_THEME_FILE_PATH="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+
+#==============================================================================
+# HELPER FUNCTIONS
+#==============================================================================
+
+initConfig() {
+	echo "Initializing configuration"
+
+  # TODO: 
+  # - create configuration directory (~/.config/theme-switch)
+  # - create theme directory 
+  #   - ~/.config/theme-switch/kitty-themes 
+  #   - ~/.config/theme-switch/vim-themes 
+  # - create template directory (~/.config/theme-switch/templates)
+  # - generate configuration file (~/.config/theme-switch/theme.conf)
+  # - generate template files (~/.config/theme-switch/templates/<vim|nvim|kitty>-<dark|light>)
+  # read repository list from /etc/theme-switch/repo-list.json
+}
+
+
+loadConfig() {
+	echo -e "${YELLOW}Loading configuration files...${RESET}"
+
+	if [ ! -d "$THEME_SWITCH_CONFIG_DIR" ]; then
+		echo -e "${RED}Error: Configuration directory '$THEME_SWITCH_CONFIG_DIR' not found!${RESET}"
+		echo -e "${RED}Exiting...${RESET}"
+		return 1
+	fi
+
+	if [ ! -f "$USER_CONFIG_FILE" ]; then
+		echo -e "${RED}Error: Configuration file '$USER_CONFIG_FILE' not found!${RESET}"
+		echo -e "${RED}Exiting...${RESET}"
+		exit 1
+	fi
+
+	# Manually parse the config file instead of sourcing it
+	while IFS='=' read -r key value; do
+		case "$key" in
+			current_theme) current_theme="$value" ;;
+			nvim_theme_file_path) nvim_theme_file_path="$value" ;;
+			vim_theme_file_path) vim_theme_file_path="$value" ;;
+			kitty_theme_file_path) kitty_theme_file_path="$value" ;;
+		esac
+	done < "$USER_CONFIG_FILE"
+
+	# Ensure required variables are set
+	: "${current_theme:=dark}"
+
+	echo -e "${GREEN}Configuration file loaded successfully.${RESET}"
+	echo "Current theme: $current_theme"
+}
+
+_loadConfig() {
+
+	echo -e "${YELLOW}Loading configuration files...${RESET}"
+
+	if [ ! -d "$THEME_SWITCH_CONFIG_DIR" ]; then
+		echo -e "${RED}Error: Configuration directory '$THEME_SWITCH_CONFIG_DIR' not found!${RESET}"
+		echo -e "${RED}Exiting...${RESET}"
+		return 1
+	fi
+
+	if [ ! -f "$USER_CONFIG_FILE" ]; then
+		echo -e "${RED}Error: Configuration file '$USER_CONFIG_FILE' not found!${RESET}"
+		echo -e "${RED}Exiting...${RESET}"
+		exit 1
+	fi
+
+	# Successful
+	source "$USER_CONFIG_FILE"
+	echo -e "${GREEN}Configuration file loaded successfully.${RESET}"
+	echo "current theme: $current_theme"
+
+	# read user configuration file in ~/.config/theme-switch/theme.conf
+	# it is expected to contains the following
+	#
+	# current_theme=dark
+	#
+	# set_kitty_theme=true
+	# set_nvim_theme=true
+	# set_vim_theme=true
+	#
+	# nvim_theme_file_path=~/.config/nvim/lua/config/theme.lua
+	# vim_theme_file_path=~/.vim/theme.vim
+	# kitty_theme_file_path=~/.config/kitty/theme.conf
+	#
+	#
+	# if this directory not found -> terminate
+	# if the file isn't found -> terminate
+}
+
+#==============================================================================
+# CORE FUNCTIONS
+#==============================================================================
+
+printVersion() {
+	echo "Theme Switcher Script CLI version $VERSION"
+}
+
+printHelp() {
+	script_name=$(basename "$0")
+	echo "Usage: $script_name [option]"
+	echo "Options:"
+	echo "  -v, --version                              Show the version number"
+	echo "  -t, --toggle                               Toggle between dark and light themes"
+	echo "  -r, --reload                               Reload the config after template changes"
+	echo "  -s, --set <theme> <program> <colorscheme>  Set a specific theme and colorscheme for a program"
+	echo "                                             Example: $script_name -s dark nvim gruvbox"
+	echo "  -o, --opacity <opacity> <theme>            Set Kitty Opacity for specific theme"
+	echo "                                             Example: $script_name -o 0.90 dark"
+	echo "  -d, --detail                               Show current theme details"
+}
+
+toggle() {
+	loadConfig
+
+  # current_theme is referenced but not assigned
+	if [ "$current_theme" = "dark" ]; then
+		setTheme "light"
+	else
+		setTheme "dark"
+	fi
+}
+
+reloadTheme() {
+	echo "Reloading"
+	loadConfig
+	setTheme "$current_theme"
+}
+
+setTheme() {
+	local theme="$1" # dark | light
+	echo -e "${YELLOW}Setting theme to $theme...${RESET}"
+
+	# Validate theme
+	if [[ "$theme" != "dark" && "$theme" != "light" ]]; then
+		echo -e "${RED}Error: Invalid theme '$theme'. Use 'dark' or 'light'.${RESET}"
+		return 1
+	fi
+
+	# Ensure required variables are available
+	if [[ -z "$nvim_theme_file_path" || -z "$vim_theme_file_path" || -z "$kitty_theme_file_path" ]]; then
+		echo -e "${RED}Error: Theme file paths are not set in the configuration!${RESET}"
+		return 1
+	fi
+
+	# Select the correct template files
+	local kitty_template="$THEME_SWITCH_TEMP_DIR/kitty-$theme"
+	local nvim_template="$THEME_SWITCH_TEMP_DIR/nvim-$theme"
+	local vim_template="$THEME_SWITCH_TEMP_DIR/vim-$theme"
+
+	# Ensure template files exist before copying
+	if [[ ! -f "$kitty_template" || ! -f "$nvim_template" || ! -f "$vim_template" ]]; then
+		echo -e "${RED}Error: One or more theme template files are missing!${RESET}"
+		return 1
+	fi
+
+	# Copy theme files to the configured paths
+	cp "$kitty_template" "$kitty_theme_file_path"
+	cp "$nvim_template" "$nvim_theme_file_path"
+	cp "$vim_template" "$vim_theme_file_path"
+
+	# Update the current theme in the config file
+	sed -i "s/^current_theme=.*/current_theme=$theme/" "$USER_CONFIG_FILE"
+
+	echo -e "${GREEN}Theme switched to $theme successfully.${RESET}"
+}
+
+setOpacity() {
+	echo "setting opacity"
+}
+
+viewDetail() {
+	echo "Printing current setup"
+
+  loadConfig
+
+  local vim_colorscheme nvim_colorscheme kitty_theme
+
+  vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' $)
+
+
+}
+
+#==============================================================================
+# CLI HANDLER
+#==============================================================================
 
 case "$1" in
 -v | --version)
-	showVersion
+	printVersion
 	;;
+
+-h | --help)
+	printHelp
+	;;
+
 -t | --toggle)
-	toggleTheme
+	toggle
 	;;
--s | --set)
-	if [ -z "$2" ] || [ -z "$3" ] || [ -z "$4" ]; then
-		echo "Usage: $0 -s <light|dark> --<vim|nvim|kitty> <colorscheme>"
-		exit 1
-	fi
-	setTemplate "$2" "$3" "$4"
-	;;
--d | --detail)
-	showDetails
-	;;
--o | --opacity)
-	setOpacity "$2" "$3"
-	;;
+
 -r | --reload)
 	reloadTheme
 	;;
+
+-o | --opacity)
+	setOpacity
+	;;
+
 *)
 	printHelp
+	exit 1
 	;;
 esac
