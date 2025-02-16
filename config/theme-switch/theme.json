@@ -1,0 +1,11 @@
+{
+  "current_theme": "dark",
+
+  "set_kitty_theme": true,
+  "set_nvim_theme": true,
+  "set_vim_theme": true,
+
+  "kitty_theme_file": "~/.config/kitty/theme.conf",
+  "nvim_theme_file": "~/.config/nvim/lua/config/theme.lua",
+  "vim_theme_file": "~/.vim/theme.vim"
+}

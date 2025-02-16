@@ -1,0 +1,104 @@
+{
+  "vim": {
+    "dark": {
+      "display_names": [
+        "Gruvbox (default)",
+        "Tokyonight",
+        "Rosé Pine",
+        "Catppuccin",
+        "Monokai"
+      ],
+      "file_names": [
+        "gruvbox",
+        "tokyonight",
+        "rosepine_moon",
+        "catppuccin_mocha",
+        "monokai"
+      ]
+    },
+    "light": {
+      "display_names": [
+        "Paper (default)",
+        "Github",
+        "Rosé Pine",
+        "Catppuccin",
+        "Material"
+      ],
+      "file_names": [
+        "paper",
+        "github_light",
+        "rosepine_dawn",
+        "catppuccin_latte",
+        "material"
+      ]
+    }
+  },
+  "nvim": {  
+    "dark": {
+      "display_names": [
+        "Gruvbox (default)",
+        "Tokyonight",
+        "Rosé Pine",
+        "Catppuccin",
+        "Monokai"
+      ],
+      "file_names": [
+        "gruvbox",
+        "tokyonight",
+        "rosepine_moon",
+        "catppuccin_mocha",
+        "monokai"
+      ]
+    },
+    "light": {
+      "display_names": [
+        "Paper (default)",
+        "Github",
+        "Rosé Pine",
+        "Catppuccin",
+        "Material"
+      ],
+      "file_names": [
+        "paper",
+        "github_light",
+        "rosepine_dawn",
+        "catppuccin_latte",
+        "material"
+      ]
+    }
+  },
+  "kitty": {
+    "dark": {
+      "display_names": [
+        "adwaita_dark",
+        "Atom",
+        "Catppuccin-Mocha",
+        "gruvbox-dark",
+        "rose-pine-moon"
+      ],
+      "file_names": [
+        "adwaita_dark",
+        "Atom",
+        "Catppuccin-Mocha",
+        "gruvbox-dark",
+        "rose-pine-moon"
+      ]
+    },
+    "light": {
+      "display_names": [
+        "Adwaita Light (default)",
+        "Atom One Light",
+        "Catppuccin Latte",
+        "Gruvboox Light",
+        "Rosé Pine Dawn"
+      ],
+      "file_names": [
+        "adwaita_light",
+        "AtomOneLight",
+        "Catppuccin-Latte",
+        "gruvbox-light",
+        "rose-pine-dawn"
+      ]
+    }
+  }
+}

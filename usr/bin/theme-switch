@@ -31,29 +31,115 @@ readonly NVIM_LIGHT_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/nvim-light"
 readonly VIM_DARK_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/vim-dark"
 readonly VIM_LIGHT_THEME_TEMPLATE="$THEME_SWITCH_TEMP_DIR/vim-light"
 
+DEFAULT_VIM_THEME_FILE_PATH="$HOME/.vim/theme.vim"
+DEFAULT_KITTY_THEME_FILE_PATH="$ROOT_CONFIG_DIR/kitty/theme.conf"
+DEFAULT_NVIM_THEME_FILE_PATH="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
 
-VIM_THEME_FILE_PATH="$HOME/.vim/theme.vim"
-KITTY_THEME_FILE_PATH="$ROOT_CONFIG_DIR/kitty/theme.conf"
-NVIM_THEME_FILE_PATH="$ROOT_CONFIG_DIR/nvim/lua/config/theme.lua"
+DEFAULT_BACKGROUND_OPACITY=1.00
+
+PRESELECTED_THEMES="/home/caesar/projects/dev-tools/prod/theme-switch/etc/theme-switch/preselected-themes.json"
+
+# production
+# PREDEFINED_THEMES="/etc/theme-switch/predefined.json"
 
 #==============================================================================
 # HELPER FUNCTIONS
 #==============================================================================
 
 initConfig() {
+
+	# GENERATE CONFIGURATION
 	echo "Initializing configuration"
+	echo "Your default theme? light/dark (default dark): "
+	read -p " " user_theme
 
-  # TODO: 
-  # - create configuration directory (~/.config/theme-switch)
-  # - create theme directory 
-  #   - ~/.config/theme-switch/kitty-themes 
-  #   - ~/.config/theme-switch/vim-themes 
-  # - create template directory (~/.config/theme-switch/templates)
-  # - generate configuration file (~/.config/theme-switch/theme.conf)
-  # - generate template files (~/.config/theme-switch/templates/<vim|nvim|kitty>-<dark|light>)
-  # read repository list from /etc/theme-switch/repo-list.json
+	# local selected_theme="${user_theme:-dark}"
+	local selected_theme="dark"
+	local set_vim_theme=true
+	local set_nvim_theme=true
+	local set_kitty_theme=true
+
+	if [[ "$user_theme" == "light" ]]; then
+		selected_theme="light"
+	fi
+
+	echo "Are you using Vim? Y/n (default yes)":
+	read -p " " use_vim
+
+	[[ "$use_vim" =~ ^(n|N) ]] && set_vim_theme=false
+
+	echo "Are you using Neovim? Y/n (default yes)":
+	read -p " " use_nvim
+
+	[[ "$use_nvim" =~ ^(n|N) ]] && set_nvim_theme=false
+
+	echo "Are you using Kitty? Y/n (default yes)":
+	read -p " " use_kitty
+
+	[[ "$use_kitty" =~ ^(n|N) ]] && set_kitty_theme=false
+
+	read -p "Path to vim theme (default $DEFAULT_VIM_THEME_FILE_PATH): " selected_vim_theme_file_path
+	local vim_theme="${selected_vim_theme_file_path:-$DEFAULT_VIM_THEME_FILE_PATH}"
+
+	read -p "Path to vim theme (default $DEFAULT_NVIM_THEME_FILE_PATH): " selected_nvim_theme_file_path
+	local nvim_theme="${selected_nvim_theme_file_path:-$DEFAULT_NVIM_THEME_FILE_PATH}"
+
+	read -p "Path to vim theme (default $DEFAULT_KITTY_THEME_FILE_PATH): " selected_kitty_theme_file_path
+	local kitty_theme="${selected_kitty_theme_file_path:-$DEFAULT_KITTY_THEME_FILE_PATH}"
+
+	# uncomment these to debug
+	# echo "your selected theme is: $selected_theme"
+	# echo "use vim: $set_vim_theme"
+	# echo "use nvim: $set_nvim_theme"
+	# echo "use kitty: $set_kitty_theme"
+
+	# echo "vim theme location: $vim_theme"
+	# echo "nvim theme location: $nvim_theme"
+	# echo "kitty theme path: $kitty_theme"
+
+	# cat >"$CONFIG_FILE" <<EOF
+	# current_theme=$selected_theme
+	# set_vim_theme=$set_vim_theme
+	# set_nvim_theme=$set_nvim_theme
+	# set_kitty_theme=$set_kitty_theme
+	# vim_theme=$vim_theme
+	# nvim_theme=$nvim_theme
+	# kitty_theme=$kitty_theme
+	# EOF
+
+	echo "Configuration saved to $USER_CONFIG_FILE"
+
+	# GENERATE THEME TEMPLATE
+
+	# pick opacity for dark theme: opacity must be number from zero to one with the increment step  of 0.01, valid input will be something like 0.92 or 0.74 or even 1.00
+	# pick opacity for light theme: same as before
+
+	read -p "Background opacity for dark theme (default: $DEFAULT_BACKGROUND_OPACITY): " selected_dark_opacity
+	# local kitty_theme="${selected_kitty_theme_file_path:-$DEFAULT_KITTY_THEME_FILE_PATH}"
+	local dark_opacity=${selected_dark_opacity:-$DEFAULT_BACKGROUND_OPACITY}
+
+	read -p "Background opacity for light theme (default: $DEFAULT_BACKGROUND_OPACITY): " selected_light_opacity
+	local light_opacity=${selected_light_opacity:-$DEFAULT_BACKGROUND_OPACITY}
+
+	echo "dark opacity: $dark_opacity"
+	echo "light opacity: $light_opacity"
+
+	# PICK NEOVIM COLORSCHEME for light and dark theme: this will be quite complex, read predefined json from file above, list  vim (yes, vim), show diplays names, remember the number, pick from the file_names with the same index, add .vim extension and well use this to do something like this
+	#
+	# vim.cmd.colorscheme("$nvim_dark_theme_name")
+	# vim.opt.background = "dark" or light
+
+	# pick vim colorscheme for light and dark theme
+	# same as before but we do vim script way
+	#
+	# set background=dark
+	# colorscheme $vim_dark_theme_name
+
+	# pick kitty theme for dark and light theme, basically the same, in the format of kitty configuration file
+	#
+	# include ./themes/$kitty_light_theme_name.conf
+	# background_opacity 1.00
 }
-
 
 loadConfig() {
 	echo -e "${YELLOW}Loading configuration files...${RESET}"
@@ -73,57 +159,18 @@ loadConfig() {
 	# Manually parse the config file instead of sourcing it
 	while IFS='=' read -r key value; do
 		case "$key" in
-			current_theme) current_theme="$value" ;;
-			nvim_theme_file_path) nvim_theme_file_path="$value" ;;
-			vim_theme_file_path) vim_theme_file_path="$value" ;;
-			kitty_theme_file_path) kitty_theme_file_path="$value" ;;
+		current_theme) current_theme="$value" ;;
+		nvim_theme_file_path) nvim_theme_file_path="$value" ;;
+		vim_theme_file_path) vim_theme_file_path="$value" ;;
+		kitty_theme_file_path) kitty_theme_file_path="$value" ;;
 		esac
-	done < "$USER_CONFIG_FILE"
+	done <"$USER_CONFIG_FILE"
 
 	# Ensure required variables are set
 	: "${current_theme:=dark}"
 
 	echo -e "${GREEN}Configuration file loaded successfully.${RESET}"
 	echo "Current theme: $current_theme"
-}
-
-_loadConfig() {
-
-	echo -e "${YELLOW}Loading configuration files...${RESET}"
-
-	if [ ! -d "$THEME_SWITCH_CONFIG_DIR" ]; then
-		echo -e "${RED}Error: Configuration directory '$THEME_SWITCH_CONFIG_DIR' not found!${RESET}"
-		echo -e "${RED}Exiting...${RESET}"
-		return 1
-	fi
-
-	if [ ! -f "$USER_CONFIG_FILE" ]; then
-		echo -e "${RED}Error: Configuration file '$USER_CONFIG_FILE' not found!${RESET}"
-		echo -e "${RED}Exiting...${RESET}"
-		exit 1
-	fi
-
-	# Successful
-	source "$USER_CONFIG_FILE"
-	echo -e "${GREEN}Configuration file loaded successfully.${RESET}"
-	echo "current theme: $current_theme"
-
-	# read user configuration file in ~/.config/theme-switch/theme.conf
-	# it is expected to contains the following
-	#
-	# current_theme=dark
-	#
-	# set_kitty_theme=true
-	# set_nvim_theme=true
-	# set_vim_theme=true
-	#
-	# nvim_theme_file_path=~/.config/nvim/lua/config/theme.lua
-	# vim_theme_file_path=~/.vim/theme.vim
-	# kitty_theme_file_path=~/.config/kitty/theme.conf
-	#
-	#
-	# if this directory not found -> terminate
-	# if the file isn't found -> terminate
 }
 
 #==============================================================================
@@ -151,7 +198,7 @@ printHelp() {
 toggle() {
 	loadConfig
 
-  # current_theme is referenced but not assigned
+	# current_theme is referenced but not assigned
 	if [ "$current_theme" = "dark" ]; then
 		setTheme "light"
 	else
@@ -210,12 +257,11 @@ setOpacity() {
 viewDetail() {
 	echo "Printing current setup"
 
-  loadConfig
+	loadConfig
 
-  local vim_colorscheme nvim_colorscheme kitty_theme
+	local vim_colorscheme nvim_colorscheme kitty_theme
 
-  vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' $)
-
+	vim_colorscheme=$(grep -oP '^colorscheme\s+\K.*' $)
 
 }
 
@@ -242,6 +288,9 @@ case "$1" in
 
 -o | --opacity)
 	setOpacity
+	;;
+-i | --init)
+	initConfig
 	;;
 
 *)
