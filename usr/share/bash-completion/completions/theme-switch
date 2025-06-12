@@ -17,10 +17,30 @@ _theme_switch_completion() {
 		return 0
 	fi
 
-	# Handle case for `-s` or `--set`
-	if [[ "$prev" == "-s" || "$prev" == "--set" ]]; then
-		COMPREPLY=($(compgen -W "dark light" -- "$cur"))
-		return 0
+	# Handle `-s` or `--set` flag completion
+	# Syntax: theme-switch -s <mode> [vim|nvim|kitty] <colorscheme>
+	if [[ "${COMP_WORDS[1]}" == "-s" || "${COMP_WORDS[1]}" == "--set" ]]; then
+		case ${COMP_CWORD} in
+		2)
+			# Position 2: theme-switch -s <mode>
+			COMPREPLY=($(compgen -W "dark light" -- "$cur"))
+			return 0
+			;;
+		3)
+			# Position 3: theme-switch -s dark <program>
+			COMPREPLY=($(compgen -W "$program_opts" -- "$cur"))
+			return 0
+			;;
+		4)
+			# Position 4: theme-switch -s dark nvim <colorscheme>
+			if [[ "${COMP_WORDS[3]}" == "vim" || "${COMP_WORDS[3]}" == "nvim" ]]; then
+				COMPREPLY=($(compgen -W "$vim_themes" -- "$cur"))
+			elif [[ "${COMP_WORDS[3]}" == "kitty" ]]; then
+				COMPREPLY=($(compgen -W "$kitty_themes" -- "$cur"))
+			fi
+			return 0
+			;;
+		esac
 	fi
 
 	# Handle completion for vim/nvim/kitty

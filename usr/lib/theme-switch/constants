@@ -2,7 +2,7 @@
 
 # /usr/lib/theme-switch/constants
 
-readonly VERSION="1.4.1"
+readonly VERSION="1.4.2"
 
 readonly ROOT_CONFIG_DIR="$HOME/.config"
 readonly CONFIG_DIR="$HOME/.config/theme-switch"
