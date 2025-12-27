@@ -9,9 +9,9 @@ checkUserConfig() {
 		echo "--------------------------------------------------------------------------------"
 		echo "Configuration directory '$CONFIG_DIR' not found."
 		echo "Would you like to create it now? (Y/n): "
-		read -r user_answer
+		read -r create_config
 
-		if [[ "$user_answer" =~ ^[Yy]$ ]]; then
+		if [[ "$create_config" =~ ^[Yy]$ ]]; then
 			initialize_config
 		else
 			echo "Exiting..."

@@ -1,0 +1,8 @@
+Package: theme-switch
+Version: 1.4.2
+Section: utils
+Priority: optional
+Architecture: all
+Depends: bash
+Maintainer: Caesar caesarmuksid@gmail.com
+Description: A CLI tool to toggle between light and dark themes
