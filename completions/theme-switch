@@ -1,3 +1,5 @@
+#!/bin/bash
+
 _theme_switch_completion() {
 	local cur prev opts program_opts vim_themes kitty_themes opacity_opts
 
